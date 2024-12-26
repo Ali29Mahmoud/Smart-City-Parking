@@ -12,7 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -20,28 +19,33 @@ public class NotificationController {
 
     @PostMapping("/create")
     public ResponseEntity<String> createNotification(@RequestBody NotificationDTO notificationDTO) {
+
+        System.out.println("a7a");
         notificationService.createNotification(notificationDTO);
         return ResponseEntity.ok("Notification created successfully");
     }
 
     @GetMapping("/getNotifications/{driverID}")
     public ResponseEntity<List<NotificationDTO>> getNotifications(@PathVariable int driverID) {
-        return null;
+        return ResponseEntity.ok(notificationService.getNotifications(driverID));
     }
 
     @PutMapping("/markAsRead/{notificationID}")
     public ResponseEntity<String> markAsRead(@PathVariable int notificationID) {
-        return null;
+        notificationService.markAsRead(notificationID);
+        return ResponseEntity.ok("Notification marked as read successfully");
     }
 
     @DeleteMapping("/deleteNotification/{notificationID}/{driverID}")
     public ResponseEntity<String> deleteNotification(@PathVariable int notificationID, @PathVariable int driverID) {
-        return null;
+        notificationService.deleteNotification(notificationID);
+        return ResponseEntity.ok("Notification deleted successfully");
     }
 
     @DeleteMapping("/deleteAllNotifications/{driverID}")
     public ResponseEntity<String> deleteAllNotifications(@PathVariable int driverID) {
-        return null;
+        notificationService.deleteAllNotifications(driverID);
+        return ResponseEntity.ok("All notifications deleted successfully");
     }
  
 

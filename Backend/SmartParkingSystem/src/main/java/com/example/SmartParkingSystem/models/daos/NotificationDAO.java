@@ -72,10 +72,16 @@ public class NotificationDAO implements NotificationRepository {
     @Override
     public List<Notification> getUnreadNotifications(Integer driverId) {
 
-        String query =
-                "SELECT * FROM notifications WHERE driver_id = ? AND status = 'UNREAD'";
+        String query = "SELECT * FROM notifications WHERE driver_id = ? AND status = 'UNREAD'";
 
-        return jdbcTemplate.query(query,ROW_MAPPER , driverId);
+        return jdbcTemplate.query(query, ROW_MAPPER, driverId);
+    }
+    
+    public List<Notification> getNotifications(Integer driverId) {
+
+        String query = "SELECT * FROM notifications WHERE driver_id = ?";
+
+        return jdbcTemplate.query(query, ROW_MAPPER, driverId);
     }
 
     @Override
