@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,22 +36,24 @@ public class ParkingLotService {
     }
 
     public ParkingLotDTO findById(Long id) {
-        ParkingLot parkingLot = parkingLotDao.findById(id);
-        return ParkingLotDTO.builder()
-                .id(parkingLot.getId())
-                .location(parkingLot.getLocation())
-                .name(parkingLot.getName())
-                .capacity(parkingLot.getCapacity())
-                .availableSpots(parkingLot.getAvailableSpots())
-                .basePrice(parkingLot.getBasePrice())
-                .reservationFactor(parkingLot.getReservationFactor())
-                .availableSpotsFactor(parkingLot.getAvailableSpotsFactor())
-                .active(parkingLot.isActive())
-                .createdAt(parkingLot.getCreatedAt())
-                .updatedAt(parkingLot.getUpdatedAt())
-                .build();
-
+        Optional<ParkingLot> parkingLot = parkingLotDao.findById(id);
+        return parkingLot.map(
+                lot -> ParkingLotDTO.builder()
+                        .id(lot.getId())
+                        .location(lot.getLocation())
+                        .name(lot.getName())
+                        .capacity(lot.getCapacity())
+                        .availableSpots(lot.getAvailableSpots())
+                        .basePrice(lot.getBasePrice())
+                        .reservationFactor(lot.getReservationFactor())
+                        .availableSpotsFactor(lot.getAvailableSpotsFactor())
+                        .active(lot.isActive())
+                        .createdAt(lot.getCreatedAt())
+                        .updatedAt(lot.getUpdatedAt())
+                        .build()
+        ).orElse(null);
     }
+
     public void updateParkingLot(ParkingLotDTO parkingLotDTO) {
         ParkingLot parkingLot = ParkingLot.builder()
                 .id(parkingLotDTO.getId())
@@ -66,6 +69,7 @@ public class ParkingLotService {
                 .build();
         parkingLotDao.update(parkingLot);
     }
+
     public void deleteParkingLotById(Long id) {
         parkingLotDao.deleteById(id);
     }

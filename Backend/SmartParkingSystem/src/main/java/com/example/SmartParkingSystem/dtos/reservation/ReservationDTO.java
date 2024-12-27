@@ -1,18 +1,18 @@
-package com.example.SmartParkingSystem.entities;
+package com.example.SmartParkingSystem.dtos.reservation;
 
+import com.example.SmartParkingSystem.entities.ReservationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Reservation {
+public class ReservationDTO {
     private Long id;
     private Integer driverId;
     private Integer spotId;
@@ -21,7 +21,7 @@ public class Reservation {
     private LocalDateTime checkOut;
     private LocalDateTime scheduledCheckIn;
     private LocalDateTime scheduledCheckOut;
-    private BigDecimal amount;
+    private String amount;
     private String paymentMethod;
     private String transactionId;
     private LocalDateTime createdAt;
