@@ -21,6 +21,7 @@ public class LoginController {
     @PostMapping("")
     public ResponseEntity<String> login(@RequestBody TokenDTO tokenDTO){
         String gmail = gmailValidationService.fetchGoogleEmail(tokenDTO.token());
+        System.out.println(gmail);
         return driverService.login(gmail);
     }
 }

@@ -32,8 +32,8 @@ public class DriverService {
         ResponseEntity<String> response;
         if(optionalDriver.isPresent()){
             Driver driver =optionalDriver.get();
-
             String driverEmail = driver.getEmail();
+            System.out.println("Email authenticated");
             response = new ResponseEntity<>(jwtService.generateToken(driverEmail), HttpStatus.OK);
         }
         else{

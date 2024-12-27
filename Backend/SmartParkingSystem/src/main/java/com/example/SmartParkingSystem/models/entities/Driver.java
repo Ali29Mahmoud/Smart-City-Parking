@@ -1,5 +1,7 @@
 package com.example.SmartParkingSystem.models.entities;
 
+import com.example.SmartParkingSystem.models.enums.Role;
+
 import java.time.LocalDate;
 
 public class Driver {
@@ -11,9 +13,14 @@ public class Driver {
     private String name;
     private Boolean hasUnpaidPenalties;
     private LocalDate createdAt;
+    private Role role;
     private LocalDate updatedAt;
-    // Default constructor
-    public Driver() {}
+    public Driver() {
+        this.role = Role.DEFAULT_ROLE;
+        this.hasUnpaidPenalties = false;
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
+    }
 
     // All-args constructor
     public Driver(Integer id, String email, String hashedPassword,
@@ -28,6 +35,7 @@ public class Driver {
         this.hasUnpaidPenalties = hasUnpaidPenalties;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.role = Role.DEFAULT_ROLE;
     }
 
     public Integer getId() { return id; }
@@ -39,6 +47,7 @@ public class Driver {
     public Boolean getHasUnpaidPenalties() { return hasUnpaidPenalties; }
     public LocalDate getCreatedAt() { return createdAt; }
     public LocalDate getUpdatedAt() { return updatedAt; }
+    public Role getRole() {return role;}
 
     // Setters
     public void setId(Integer id) { this.id = id; }
@@ -50,4 +59,5 @@ public class Driver {
     public void setHasUnpaidPenalties(Boolean hasUnpaidPenalties) { this.hasUnpaidPenalties = hasUnpaidPenalties; }
     public void setCreatedAt(LocalDate createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(LocalDate updatedAt) { this.updatedAt = updatedAt; }
+    public void setRole(Role role) { this.role = role;}
 }
