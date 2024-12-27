@@ -13,4 +13,3 @@ INSERT INTO ParkingLot (location, name, capacity, availableSpots, basePrice,
                         createdAt, updatedAt)
 VALUES ('Giza', 'Giza Parking', 300, 300, 30.0, 0.5, 0.5, true,
         now(), now());
-

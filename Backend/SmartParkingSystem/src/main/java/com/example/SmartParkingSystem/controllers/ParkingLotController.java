@@ -18,10 +18,11 @@ public class ParkingLotController {
     }
 
     @PostMapping(path = "/parking-lots")
-    public ResponseEntity<Void> createParkingLotById(@RequestBody ParkingLotCreateDTO parkingLotDTO) {
-        parkingLotService.createParkingLot(parkingLotDTO);
+    public ResponseEntity<Void> createParkingLotById(@RequestBody ParkingLotCreateDTO parkingLotCreateDTO) {
+        parkingLotService.createParkingLot(parkingLotCreateDTO);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping(path = "/parking-lots/{id}")
     public ResponseEntity<ParkingLotDTO> getParkingLotById(@PathVariable Long id) {
         return ResponseEntity.ok(parkingLotService.findById(id));
@@ -32,7 +33,7 @@ public class ParkingLotController {
         return ResponseEntity.ok(parkingLotService.findAll());
     }
 
-    @PutMapping(path = "/parking-lots/{id}")
+    @PutMapping(path = "/parking-lots/")
     public ResponseEntity<Void> updateParkingLotById(@RequestBody ParkingLotDTO parkingLotDTO) {
         parkingLotService.updateParkingLot(parkingLotDTO);
         return ResponseEntity.ok().build();
