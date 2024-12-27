@@ -2,7 +2,7 @@ package com.example.SmartParkingSystem.services;
 
 import com.example.SmartParkingSystem.Security.JWTService;
 import com.example.SmartParkingSystem.models.dtos.DriverDTO;
-import com.example.SmartParkingSystem.models.entities.Driver;
+import com.example.SmartParkingSystem.models.entities.User;
 import com.example.SmartParkingSystem.repositories.DriverRepository;
 import com.example.SmartParkingSystem.services.mappers.DriverDTOMapper;
 import org.springframework.http.HttpStatus;
@@ -24,14 +24,14 @@ public class DriverService {
     }
 
     public void addDriver(DriverDTO driverDTO){
-        Driver driver = driverDTOMapper.apply(driverDTO);
+        User driver = driverDTOMapper.apply(driverDTO);
         driverRepository.save(driver);
     }
     public ResponseEntity<String> login(String email){
-        Optional<Driver> optionalDriver = driverRepository.findByEmail(email);
+        Optional<User> optionalDriver = driverRepository.findByEmail(email);
         ResponseEntity<String> response;
         if(optionalDriver.isPresent()){
-            Driver driver =optionalDriver.get();
+            User driver =optionalDriver.get();
             String driverEmail = driver.getEmail();
             System.out.println("Email authenticated");
             response = new ResponseEntity<>(jwtService.generateToken(driverEmail), HttpStatus.OK);

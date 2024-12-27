@@ -20,7 +20,7 @@ public class NotificationDAO implements NotificationRepository {
 
     private static final RowMapper<Notification> ROW_MAPPER = (rs, rowNum) -> Notification.builder()
             .id(rs.getInt("id"))
-            .driverId(rs.getInt("driver_id"))
+            .driverId(rs.getInt("userID"))
             .message(rs.getString("message"))
             .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
             .priority(NotificationPriority.valueOf(rs.getString("priority")))
@@ -32,7 +32,7 @@ public class NotificationDAO implements NotificationRepository {
     public void createNotification(Notification notification) {
 
         String query =
-                "INSERT INTO notifications (driver_id, message, priority, type,status) VALUES (?, ?, ?, ?)";
+                "INSERT INTO notifications (userID, message, priority, type,status) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(query, notification.getDriverId(), notification.getMessage(),
                 notification.getPriority().toString(), notification.getType().toString(), "UNREAD");
@@ -63,7 +63,7 @@ public class NotificationDAO implements NotificationRepository {
     public void deleteAllNotifications(Integer driverId) {
 
         String query =
-                "DELETE FROM notifications WHERE driver_id = ?";
+                "DELETE FROM notifications WHERE userID = ?";
 
         jdbcTemplate.update(query, driverId);
 
@@ -72,14 +72,14 @@ public class NotificationDAO implements NotificationRepository {
     @Override
     public List<Notification> getUnreadNotifications(Integer driverId) {
 
-        String query = "SELECT * FROM notifications WHERE driver_id = ? AND status = 'UNREAD'";
+        String query = "SELECT * FROM notifications WHERE userID = ? AND status = 'UNREAD'";
 
         return jdbcTemplate.query(query, ROW_MAPPER, driverId);
     }
     
     public List<Notification> getNotifications(Integer driverId) {
 
-        String query = "SELECT * FROM notifications WHERE driver_id = ?";
+        String query = "SELECT * FROM notifications WHERE userID = ?";
 
         return jdbcTemplate.query(query, ROW_MAPPER, driverId);
     }
@@ -87,7 +87,7 @@ public class NotificationDAO implements NotificationRepository {
     @Override
     public List<Notification> getNotificationsByType(Integer driverId, NotificationType type) {
 
-        String query = "SELECT * FROM notification WHERE driver_id = ? AND type = ?";
+        String query = "SELECT * FROM notification WHERE userID = ? AND type = ?";
 
 
         return jdbcTemplate.query(query,ROW_MAPPER,driverId,type.toString());
@@ -96,7 +96,7 @@ public class NotificationDAO implements NotificationRepository {
     @Override
     public List<Notification> getNotificationsByPriority(Integer driverId, NotificationPriority priority) {
 
-        String query = "SELECT * FROM notification WHERE driver_id = ? AND priority = ?";
+        String query = "SELECT * FROM notification WHERE userID = ? AND priority = ?";
 
 
         return jdbcTemplate.query(query,ROW_MAPPER,driverId,priority.toString());

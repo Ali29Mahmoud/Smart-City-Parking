@@ -1,8 +1,7 @@
 package com.example.SmartParkingSystem.repositories;
 
-import com.example.SmartParkingSystem.models.entities.Driver;
+import com.example.SmartParkingSystem.models.entities.User;
 import com.example.SmartParkingSystem.models.enums.Role;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,28 +13,29 @@ import java.util.Optional;
 @Repository
 public class DriverRepository {
     private JdbcTemplate jdbcTemplate;
-    private static final String TABLE_NAME = "drivers";
+    private static final String TABLE_NAME = "users";
     public DriverRepository(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
-    private final RowMapper<Driver> rowMapper = (ResultSet rs, int rowNum) -> {
-        Driver driver = new Driver();
+    private final RowMapper<User> rowMapper = (ResultSet rs, int rowNum) -> {
+        User driver = new User();
         driver.setId(rs.getInt("id"));
         driver.setEmail(rs.getString("email"));
-        driver.setHashedPassword(rs.getString("hashed_password"));
-        driver.setPhoneNumber(rs.getString("phone_number"));
-        driver.setLicencePlate(rs.getString("licence_plate"));
+        driver.setHashedPassword(rs.getString("hashedPassword"));
+        driver.setPhoneNumber(rs.getString("phoneNumber"));
+        driver.setLicencePlate(rs.getString("licensePlate"));
         driver.setName(rs.getString("name"));
-        driver.setHasUnpaidPenalties(rs.getBoolean("has_unpaid_penalties"));
-        driver.setCreatedAt(rs.getDate("created_at").toLocalDate());
-        driver.setUpdatedAt(rs.getDate("updated_at").toLocalDate());
+        driver.setHasUnpaidPenalties(rs.getBoolean("unpaidPenalties"));
+        driver.setCreatedAt(rs.getDate("createdAt").toLocalDate());
+        driver.setUpdatedAt(rs.getDate("updatedAt").toLocalDate());
+        driver.setRole( Role.valueOf(rs.getString("role")));
         System.out.println("in row mapper: "+driver.getEmail());
         return driver;
     };
-    public Driver save(Driver driver){
+    public User save(User driver){
         String sql = """
-            INSERT INTO drivers (email, hashed_password, phone_number, licence_plate, 
-            name, has_unpaid_penalties, created_at, updated_at)
+            INSERT INTO users (email, hashedPassword, phoneNumber, licensePlate, 
+            name, unpaidPenalties, createdAt, updatedAt)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
         jdbcTemplate.update(sql,
@@ -50,20 +50,20 @@ public class DriverRepository {
         );
         return driver;
     }
-    public Optional<Driver> findById (Integer id) {
-        String sql = "SELECT * FROM drivers WHERE id = ?";
+    public Optional<User> findById (Integer id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
         try{
-            Driver driver = jdbcTemplate.queryForObject(sql, rowMapper, id);
+            User driver = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(driver);
         }catch(Exception e){
             return Optional.empty();
         }
     }
-    public Optional<Driver> findByEmail (String email){
+    public Optional<User> findByEmail (String email){
         System.out.println("Finding by email: "+email);
-        String sql = "SELECT * FROM drivers WHERE email = ?";
+        String sql = "SELECT * FROM users WHERE email = ?";
         try{
-            Driver driver = jdbcTemplate.queryForObject(sql, rowMapper, email);
+            User driver = jdbcTemplate.queryForObject(sql, rowMapper, email);
             System.out.println(driver.getCreatedAt());
             return Optional.ofNullable(driver);
         }
@@ -71,15 +71,15 @@ public class DriverRepository {
             return Optional.empty();
         }
     }
-    public List<Driver> findAll(){
-        String sql = "SELECT * FROM drivers";
+    public List<User> findAll(){
+        String sql = "SELECT * FROM users";
         return jdbcTemplate.query(sql, rowMapper);
     }
-    public void update(Driver driver) {
+    public void update(User driver) {
         String sql = """
-            UPDATE drivers 
-            SET email = ?, hashed_password = ?, phone_number = ?, 
-            licence_plate = ?, name = ?, has_unpaid_penalties = ?, updated_at = ?
+            UPDATE users 
+            SET email = ?, hashedPassword = ?, phoneNumber = ?, 
+            licensePlate = ?, name = ?, unpaidPenalties = ?, updatedAt = ?
             WHERE id = ?
             """;
 
@@ -95,7 +95,7 @@ public class DriverRepository {
         );
     }
     public void deleteById(Integer id) {
-        String sql = "DELETE FROM drivers WHERE id = ?";
+        String sql = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 

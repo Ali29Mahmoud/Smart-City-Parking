@@ -8,13 +8,13 @@ drop table if exists Penalty cascade;
 
 drop table if exists Reservation cascade;
 
-drop table if exists Driver cascade;
+drop table if exists Users cascade;
 
 drop table if exists ParkingSpot cascade;
 
 drop table if exists ParkingLot cascade;
 
-CREATE TABLE Driver
+CREATE TABLE Users
 (
     id              INT PRIMARY KEY AUTO_INCREMENT,
     email           VARCHAR(255) NOT NULL UNIQUE,
@@ -78,7 +78,7 @@ CREATE TABLE ParkingSpot
 CREATE TABLE Reservation
 (
     id                INT PRIMARY KEY AUTO_INCREMENT,
-    driverId          INT                                               NOT NULL,
+    userID          INT                                               NOT NULL,
     spotId            INT                                               NOT NULL,
     status            ENUM ('PENDING','ACTIVE', 'COMPLETED', 'NO_SHOW') NOT
                                                                             NULL,
@@ -90,7 +90,7 @@ CREATE TABLE Reservation
     paymentMethod     VARCHAR(50)                                       NOT NULL,
     transactionId     VARCHAR(255)                                      NOT NULL,
     createdAt         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (driverId) REFERENCES Driver (id),
+    FOREIGN KEY (userID) REFERENCES Users (id),
     FOREIGN KEY (spotId) REFERENCES ParkingSpot (id),
     CHECK (scheduledCheckOut > scheduledCheckIn),
     CHECK (checkOut IS NULL OR checkOut > checkIn)
@@ -123,17 +123,17 @@ CREATE TABLE PenaltyPayment
 CREATE TABLE Notification
 (
     id        INT PRIMARY KEY AUTO_INCREMENT,
-    driverId  INT                                   NOT NULL,
+    userID  INT                                   NOT NULL,
     message   TEXT                                  NOT NULL,
     type      ENUM ('REMINDER', 'PAYMENT', 'ALERT') NOT NULL,
     status    ENUM ('SENT', 'READ')                 NOT NULL DEFAULT 'sent',
     priority  ENUM ('LOW', 'MEDIUM', 'HIGH')        NOT NULL,
     createdAt TIMESTAMP                                      DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (driverId) REFERENCES Driver (id)
+    FOREIGN KEY (userID) REFERENCES Users (id)
 );
 
 -- Add indexes for common queries and performance
-CREATE INDEX idx_drivers_unpaid_penalties ON Driver (unpaidPenalties);
+CREATE INDEX idx_drivers_unpaid_penalties ON Users (unpaidPenalties);
 CREATE INDEX idx_parking_lots_active ON ParkingLot (active);
 CREATE INDEX idx_reservations_status ON Reservation (status);
 CREATE INDEX idx_notifications_status ON Notification (status);

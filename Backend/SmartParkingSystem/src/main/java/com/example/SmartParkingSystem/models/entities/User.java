@@ -4,7 +4,7 @@ import com.example.SmartParkingSystem.models.enums.Role;
 
 import java.time.LocalDate;
 
-public class Driver {
+public class User {
     private Integer id;
     private String email;
     private String hashedPassword;
@@ -15,7 +15,7 @@ public class Driver {
     private LocalDate createdAt;
     private Role role;
     private LocalDate updatedAt;
-    public Driver() {
+    public User() {
         this.role = Role.DEFAULT_ROLE;
         this.hasUnpaidPenalties = false;
         this.createdAt = LocalDate.now();
@@ -23,9 +23,9 @@ public class Driver {
     }
 
     // All-args constructor
-    public Driver(Integer id, String email, String hashedPassword,
-                  String phoneNumber, String licencePlate, String name,
-                  Boolean hasUnpaidPenalties, LocalDate createdAt, LocalDate updatedAt) {
+    public User(Integer id, String email, String hashedPassword,
+                String phoneNumber, String licencePlate, String name,
+                Boolean hasUnpaidPenalties, LocalDate createdAt, LocalDate updatedAt) {
         this.id = id;
         this.email = email;
         this.hashedPassword = hashedPassword;
