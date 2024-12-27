@@ -139,4 +139,3 @@ CREATE INDEX idx_reservations_status ON Reservation (status);
 CREATE INDEX idx_notifications_status ON Notification (status);
 CREATE INDEX idx_penalties_status ON Penalty (status);
 DROP PROCEDURE IF EXISTS CreateMultipleParkingSpots;
-
