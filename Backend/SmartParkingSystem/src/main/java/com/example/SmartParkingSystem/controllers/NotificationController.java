@@ -20,7 +20,6 @@ public class NotificationController {
     @PostMapping("/create")
     public ResponseEntity<String> createNotification(@RequestBody NotificationDTO notificationDTO) {
 
-        System.out.println("a7a");
         notificationService.createNotification(notificationDTO);
         return ResponseEntity.ok("Notification created successfully");
     }

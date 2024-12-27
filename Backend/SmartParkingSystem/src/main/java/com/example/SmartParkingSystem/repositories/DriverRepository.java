@@ -1,6 +1,7 @@
 package com.example.SmartParkingSystem.repositories;
 
 import com.example.SmartParkingSystem.models.entities.Driver;
+import com.example.SmartParkingSystem.models.enums.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,6 +29,7 @@ public class DriverRepository {
         driver.setHasUnpaidPenalties(rs.getBoolean("has_unpaid_penalties"));
         driver.setCreatedAt(rs.getDate("created_at").toLocalDate());
         driver.setUpdatedAt(rs.getDate("updated_at").toLocalDate());
+        System.out.println("in row mapper: "+driver.getEmail());
         return driver;
     };
     public Driver save(Driver driver){
@@ -49,7 +51,7 @@ public class DriverRepository {
         return driver;
     }
     public Optional<Driver> findById (Integer id) {
-        String sql = "SELECT * FROM DRIVER WHERE id = ?";
+        String sql = "SELECT * FROM drivers WHERE id = ?";
         try{
             Driver driver = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(driver);
@@ -58,9 +60,11 @@ public class DriverRepository {
         }
     }
     public Optional<Driver> findByEmail (String email){
-        String sql = "SELECT * FROM DRIVER WHERE email = ?";
+        System.out.println("Finding by email: "+email);
+        String sql = "SELECT * FROM drivers WHERE email = ?";
         try{
             Driver driver = jdbcTemplate.queryForObject(sql, rowMapper, email);
+            System.out.println(driver.getCreatedAt());
             return Optional.ofNullable(driver);
         }
         catch (Exception e){
@@ -68,7 +72,7 @@ public class DriverRepository {
         }
     }
     public List<Driver> findAll(){
-        String sql = "SELECT * FROM Driver";
+        String sql = "SELECT * FROM drivers";
         return jdbcTemplate.query(sql, rowMapper);
     }
     public void update(Driver driver) {

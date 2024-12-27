@@ -1,6 +1,7 @@
 package com.example.SmartParkingSystem.config;
 
 import com.example.SmartParkingSystem.Security.JWTAuthenticationFilter;
+import com.example.SmartParkingSystem.models.enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,9 +36,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/**", "/register/**", "/forgetPassword",
-                                "/resetPassword", "/verification/**", "/search/**")
-                        .permitAll()
+                        .requestMatchers("api/manager/**").hasAuthority(Role.PARKING_MANAGER.name())
+                        .requestMatchers("/login/**", "/register/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter,
