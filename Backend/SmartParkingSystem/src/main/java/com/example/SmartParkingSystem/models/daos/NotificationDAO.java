@@ -43,7 +43,7 @@ public class NotificationDAO implements NotificationRepository {
     public void markAsRead(Integer notificationId) {
 
         String query =
-                "UPDATE notification SET status = 'READ' WHERE id = ?";
+                "UPDATE notifications SET status = 'READ' WHERE id = ?";
     
         jdbcTemplate.update(query, notificationId);
 
