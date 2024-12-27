@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,11 +28,23 @@ public class ReservationService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createReservation(ReservationCreateDTO reservationCreateDTO) {
-        if (reservationDao.isSpotAvailable(reservationCreateDTO.getSpotId(), reservationCreateDTO.getScheduledCheckIn(),
-                reservationCreateDTO.getScheduledCheckOut())) {
+        if (!reservationDao.isSpotAvailable(
+                reservationCreateDTO.getSpotId(),
+                reservationCreateDTO.getScheduledCheckIn(),
+                reservationCreateDTO.getScheduledCheckOut()
+        )) {
             System.out.println("Spot Not Available");
             return;
         }
+        // calculate duration of reservation in hours ceil(scheduledCheckOut - scheduledCheckIn)
+        Integer timeLimit = reservationDao.getTimeLimitBySpotId(reservationCreateDTO.getSpotId());
+        Duration duration = Duration.between(reservationCreateDTO.getScheduledCheckIn(), reservationCreateDTO.getScheduledCheckOut());
+        int durationInHours = (int) Math.ceil(duration.getSeconds() / 3600.0);
+        if (timeLimit != null && durationInHours > timeLimit) {
+            System.out.println("Reservation duration exceeds time limit");
+            return;
+        }
+
         try {
             Reservation reservation = Reservation.builder()
                     .driverId(reservationCreateDTO.getDriverId())

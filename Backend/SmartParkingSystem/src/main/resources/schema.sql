@@ -69,7 +69,7 @@ CREATE TABLE ParkingSpot
     spotNumber   INT                                   NOT NULL,
     size         ENUM ('REGULAR', 'LARGE')             NOT NULL,
     type         ENUM ('GAS', 'ELECTRIC')              NOT NULL,
-    handicapped  BOOLEAN                                        DEFAULT FALSE,
+    handicapped  BOOLEAN                               NOT NULL DEFAULT FALSE,
     status       ENUM ('FREE', 'OCCUPIED', 'RESERVED') NOT NULL DEFAULT 'FREE',
     FOREIGN KEY (parkingLotId) REFERENCES ParkingLot (id),
     UNIQUE KEY unique_spot_number (parkingLotId, spotNumber)
@@ -79,7 +79,7 @@ CREATE TABLE ParkingSpot
 CREATE TABLE Reservation
 (
     id                INT PRIMARY KEY AUTO_INCREMENT,
-    userID          INT                                               NOT NULL,
+    userID            INT                                               NOT NULL,
     spotId            INT                                               NOT NULL,
     status            ENUM ('PENDING','ACTIVE', 'COMPLETED', 'NO_SHOW') NOT NULL,
     checkIn           DATETIME,
@@ -123,7 +123,7 @@ CREATE TABLE PenaltyPayment
 CREATE TABLE Notification
 (
     id        INT PRIMARY KEY AUTO_INCREMENT,
-    userID  INT                                   NOT NULL,
+    userID    INT                                   NOT NULL,
     message   TEXT                                  NOT NULL,
     type      ENUM ('REMINDER', 'PAYMENT', 'ALERT') NOT NULL,
     status    ENUM ('SENT', 'READ')                 NOT NULL DEFAULT 'sent',

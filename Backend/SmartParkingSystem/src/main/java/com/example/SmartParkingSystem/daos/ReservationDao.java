@@ -28,7 +28,7 @@ public class ReservationDao {
         String sql = """
                 SELECT COUNT(*) FROM Reservation
                 WHERE spotId = ?
-                AND NOT (? < scheduledCheckIn AND scheduledCheckOut < ?)
+                AND NOT (? < scheduledCheckIn OR scheduledCheckOut < ?)
                 """;
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, spotId, end, start);
         return count != null && count == 0;
@@ -61,6 +61,7 @@ public class ReservationDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ReservationRowMapper(), id));
         } catch (Exception e) {
+            System.out.println(e.toString());
             return Optional.empty();
         }
     }
@@ -129,6 +130,15 @@ public class ReservationDao {
         ), spotId);
     }
 
+    public Integer getTimeLimitBySpotId(Integer spotId) {
+        String sql = """
+                SELECT timeLimit
+                FROM ParkingSpot JOIN ParkingLot ON ParkingSpot.parkingLotId = ParkingLot.id
+                WHERE ParkingSpot.id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, Integer.class, spotId);
+    }
+
 
     private static class ReservationRowMapper implements RowMapper<Reservation> {
         @Override
@@ -138,16 +148,20 @@ public class ReservationDao {
                     .driverId(rs.getInt("userID"))
                     .spotId(rs.getInt("spotId"))
                     .status(ReservationStatus.valueOf(rs.getString("status")))
-                    .checkIn(rs.getTimestamp("checkIn").toLocalDateTime())
-                    .checkOut(rs.getTimestamp("checkOut").toLocalDateTime())
-                    .scheduledCheckIn(rs.getTimestamp("scheduledCheckIn").toLocalDateTime())
-                    .scheduledCheckOut(rs.getTimestamp("scheduledCheckOut").toLocalDateTime())
+                    .checkIn(getLocalDateTimeOrNull(rs, "checkIn"))
+                    .checkOut(getLocalDateTimeOrNull(rs, "checkOut"))
+                    .scheduledCheckIn(getLocalDateTimeOrNull(rs, "scheduledCheckIn"))
+                    .scheduledCheckOut(getLocalDateTimeOrNull(rs, "scheduledCheckOut"))
                     .amount(rs.getBigDecimal("amount"))
                     .paymentMethod(rs.getString("paymentMethod"))
                     .transactionId(rs.getString("transactionId"))
-                    .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                    .createdAt(getLocalDateTimeOrNull(rs, "createdAt"))
                     .build();
         }
 
+        private LocalDateTime getLocalDateTimeOrNull(ResultSet rs, String columnName) throws SQLException {
+            java.sql.Timestamp timestamp = rs.getTimestamp(columnName);
+            return timestamp != null ? timestamp.toLocalDateTime() : null;
+        }
     }
 }
