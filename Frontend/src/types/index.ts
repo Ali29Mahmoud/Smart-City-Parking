@@ -1,35 +1,42 @@
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  role: 'driver' | 'manager' | 'admin';
-  licensePlate?: string;
-};
+export type ParkingSpotType = 'regular' | 'disabled' | 'ev';
+export type SpotStatus = 'available' | 'occupied' | 'reserved';
+export type UserRole = 'driver' | 'manager' | 'admin';
 
-export type ParkingSpot = {
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  licensePlate?: string;
+  paymentMethod?: string;
+}
+
+export interface ParkingSpot {
   id: string;
   lotId: string;
   number: string;
-  status: 'available' | 'occupied' | 'reserved';
-  type: 'standard' | 'handicap' | 'ev';
+  type: ParkingSpotType;
+  status: SpotStatus;
   price: number;
-};
+}
 
-export type ParkingLot = {
+export interface ParkingLot {
   id: string;
   name: string;
   location: string;
-  totalSpots: number;
-  availableSpots: number;
-  occupancyRate: number;
-};
+  capacity: number;
+  spots: ParkingSpot[];
+  basePrice: number;
+  multiplier: number; // For dynamic pricing
+}
 
-export type Reservation = {
+export interface Reservation {
   id: string;
   userId: string;
   spotId: string;
+  lotId: string;
   startTime: Date;
   endTime: Date;
   status: 'active' | 'completed' | 'cancelled';
   price: number;
-};
+}

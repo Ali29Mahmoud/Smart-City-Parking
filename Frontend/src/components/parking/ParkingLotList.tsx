@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Layout } from './components/Layout';
-import { ParkingLotCard } from './components/ParkingLotCard';
-import { SpotGrid } from './components/SpotGrid';
-import { ReservationModal } from './components/ReservationModal';
-import type { ParkingLot, ParkingSpot } from './types';
+import { ParkingLotCard } from './ParkingLotCard';
+import { SpotGrid } from './SpotGrid';
+import { ReservationModal } from './ReservationModal';
+import type { ParkingLot, ParkingSpot } from '../../types';
 
 // Mock data - replace with actual API calls
 const mockParkingLots: ParkingLot[] = [
@@ -26,7 +25,7 @@ const mockParkingLots: ParkingLot[] = [
   // Add more parking lots here
 ];
 
-function App() {
+export function ParkingLotList() {
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
 
@@ -39,24 +38,21 @@ function App() {
   };
 
   return (
-    <Layout>
+    <>
       {!selectedLot ? (
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">Available Parking Lots</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockParkingLots.map((lot) => (
-              <ParkingLotCard
-                key={lot.id}
-                lot={lot}
-                onSelect={setSelectedLot}
-              />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {mockParkingLots.map((lot) => (
+            <ParkingLotCard
+              key={lot.id}
+              lot={lot}
+              onSelect={setSelectedLot}
+            />
+          ))}
         </div>
       ) : (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">{selectedLot.name}</h1>
+            <h2 className="text-2xl font-bold">{selectedLot.name}</h2>
             <button
               onClick={() => setSelectedLot(null)}
               className="text-blue-600 hover:text-blue-700"
@@ -78,8 +74,6 @@ function App() {
           onReserve={handleReservation}
         />
       )}
-    </Layout>
+    </>
   );
 }
-
-export default App;
