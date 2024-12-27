@@ -66,8 +66,8 @@ CREATE TABLE ParkingSpot
     id           INT PRIMARY KEY AUTO_INCREMENT,
     parkingLotId INT                       NOT NULL,
     spotNumber   INT                       NOT NULL,
-    size         ENUM ('regular', 'large') NOT NULL,
-    type         ENUM ('gas', 'electric')  NOT NULL,
+    size         ENUM ('REGULAR', 'LARGE') NOT NULL,
+    type         ENUM ('GAS', 'ELECTRIC')  NOT NULL,
     handicapped  BOOLEAN DEFAULT FALSE,
     occupied     BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (parkingLotId) REFERENCES ParkingLot (id),
@@ -80,7 +80,7 @@ CREATE TABLE Reservation
     id                INT PRIMARY KEY AUTO_INCREMENT,
     driverId          INT                                     NOT NULL,
     spotId            INT                                     NOT NULL,
-    status            ENUM ('active', 'completed', 'no-show') NOT NULL,
+    status            ENUM ('ACTIVE', 'COMPLETED', 'NO_SHOW') NOT NULL,
     checkIn           DATETIME,
     checkOut          DATETIME,
     scheduledCheckIn  DATETIME                                NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE Penalty
     reservationId INT                      NOT NULL,
     amount        DECIMAL(10, 2)           NOT NULL,
     reason        VARCHAR(255)             NOT NULL,
-    status        ENUM ('paid', 'pending') NOT NULL DEFAULT 'pending',
+    status        ENUM ('PAID', 'PENDING') NOT NULL DEFAULT 'PENDING',
     createdAt     TIMESTAMP                         DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (reservationId) REFERENCES Reservation (id)
 );
@@ -124,9 +124,9 @@ CREATE TABLE Notification
     id        INT PRIMARY KEY AUTO_INCREMENT,
     driverId  INT                                   NOT NULL,
     message   TEXT                                  NOT NULL,
-    type      ENUM ('reminder', 'payment', 'alert') NOT NULL,
-    status    ENUM ('sent', 'read')                 NOT NULL DEFAULT 'sent',
-    priority  ENUM ('low', 'medium', 'high')        NOT NULL,
+    type      ENUM ('REMINDER', 'PAYMENT', 'ALERT') NOT NULL,
+    status    ENUM ('SENT', 'READ')                 NOT NULL DEFAULT 'sent',
+    priority  ENUM ('LOW', 'MEDIUM', 'HIGH')        NOT NULL,
     createdAt TIMESTAMP                                      DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (driverId) REFERENCES Driver (id)
 );
@@ -137,3 +137,5 @@ CREATE INDEX idx_parking_lots_active ON ParkingLot (active);
 CREATE INDEX idx_reservations_status ON Reservation (status);
 CREATE INDEX idx_notifications_status ON Notification (status);
 CREATE INDEX idx_penalties_status ON Penalty (status);
+DROP PROCEDURE IF EXISTS CreateMultipleParkingSpots;
+

@@ -1,5 +1,6 @@
-package com.example.SmartParkingSystem.entities;
-
+package com.example.SmartParkingSystem.dtos.parkingSpot;
+import com.example.SmartParkingSystem.entities.SpotSize;
+import com.example.SmartParkingSystem.entities.SpotType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,12 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ParkingSpot {
-    private Long id;
+public class ParkingSpotBatchCreateDTO {
     private Long parkingLotId;
-    private Integer spotNumber;
+    private Integer spotNumberStart;
+    private Integer spotNumberEnd;
     private SpotSize size;
     private SpotType type;
     private Boolean handicapped;
-    private Boolean occupied;
 }

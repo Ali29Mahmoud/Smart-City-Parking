@@ -64,7 +64,7 @@ public class ParkingLotDao {
         return jdbcTemplate.query(sql, new ParkingLotRowMapper());
     }
 
-    public static class ParkingLotRowMapper implements RowMapper<ParkingLot> {
+    private static class ParkingLotRowMapper implements RowMapper<ParkingLot> {
         @Override
         public ParkingLot mapRow(ResultSet rs, int rowNum) throws SQLException {
             return ParkingLot.builder()
