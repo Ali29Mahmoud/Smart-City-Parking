@@ -7,6 +7,7 @@ import com.example.SmartParkingSystem.services.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -65,5 +66,9 @@ public class ReservationController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    @GetMapping("/amount")
+    public ResponseEntity<BigDecimal> calculateReservationAmount(@RequestBody ReservationCreateDTO reservationCreateDTO) {
+        return ResponseEntity.ok(reservationService.calculateReservationAmount(reservationCreateDTO));
     }
 }

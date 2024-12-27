@@ -3,11 +3,16 @@ package com.example.SmartParkingSystem.services;
 import com.example.SmartParkingSystem.daos.ReservationDao;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationCreateDTO;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationDTO;
+import com.example.SmartParkingSystem.entities.PricingStructure;
 import com.example.SmartParkingSystem.entities.Reservation;
 import com.example.SmartParkingSystem.entities.ReservationStatus;
+import com.example.SmartParkingSystem.entities.SpotType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,23 +25,28 @@ public class ReservationService {
         this.reservationDao = reservationDao;
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createReservation(ReservationCreateDTO reservationCreateDTO) {
-        Reservation reservation = Reservation.builder()
-                .driverId(reservationCreateDTO.getDriverId())
-                .spotId(reservationCreateDTO.getSpotId())
-                .scheduledCheckIn(reservationCreateDTO.getScheduledCheckIn())
-                .scheduledCheckOut(reservationCreateDTO.getScheduledCheckOut())
-                .amount(new BigDecimal(reservationCreateDTO.getAmount()))
-                .paymentMethod(reservationCreateDTO.getPaymentMethod())
-                .transactionId(reservationCreateDTO.getTransactionId())
-                .status(ReservationStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .build();
-        reservationDao.create(reservation);
-
-        // TODO return better response
-
-
+        if (reservationDao.isSpotAvailable(reservationCreateDTO.getSpotId(), reservationCreateDTO.getScheduledCheckIn(),
+                reservationCreateDTO.getScheduledCheckOut())) {
+            System.out.println("Spot Not Available");
+        }
+        try {
+            Reservation reservation = Reservation.builder()
+                    .driverId(reservationCreateDTO.getDriverId())
+                    .spotId(reservationCreateDTO.getSpotId())
+                    .scheduledCheckIn(reservationCreateDTO.getScheduledCheckIn())
+                    .scheduledCheckOut(reservationCreateDTO.getScheduledCheckOut())
+                    .amount(new BigDecimal(reservationCreateDTO.getAmount()))
+                    .paymentMethod(reservationCreateDTO.getPaymentMethod())
+                    .transactionId(reservationCreateDTO.getTransactionId())
+                    .status(ReservationStatus.PENDING)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            reservationDao.create(reservation);
+        } catch (Exception e) {
+            System.out.println("Error creating reservation");
+        }
     }
 
     public ReservationDTO updateReservation(ReservationDTO reservationDTO) {
@@ -53,7 +63,7 @@ public class ReservationService {
                 .createdAt(reservationDTO.getCreatedAt())
                 .build();
         reservationDao.update(reservation);
-        return reservationDTO; // TODO Return a better option
+        return reservationDTO;
     }
 
     public ReservationDTO findById(Long id) {
@@ -89,11 +99,27 @@ public class ReservationService {
         List<Reservation> reservations = reservationDao.findAllBySpotId(spotId);
         return getReservationDTOS(reservations);
     }
+
     public List<ReservationDTO> findAllByStatus(ReservationStatus status) {
         List<Reservation> reservations = reservationDao.findAllByStatus(status);
         return getReservationDTOS(reservations);
     }
 
+    public BigDecimal calculateReservationAmount(ReservationCreateDTO reservationCreateDTO) {
+        PricingStructure ps = reservationDao.calculateReservationAmount(reservationCreateDTO.getSpotId());
+        MathContext mc = new MathContext(2);
+        BigDecimal avSp = BigDecimal.valueOf(ps.getAvailableSpots()).add(BigDecimal.ONE);
+        BigDecimal demand = ps.getDemandFactor().divide(avSp, mc);
+        BigDecimal ev = ps.getEvFactor();
+        BigDecimal bsPrice = ps.getBasePrice();
+        if (ps.getSpotType() != SpotType.ELECTRIC) {
+            ev = BigDecimal.ZERO;
+        }
+        BigDecimal duration = BigDecimal.valueOf(reservationCreateDTO.getScheduledCheckOut().getHour() -
+                reservationCreateDTO.getScheduledCheckIn().getHour());
+
+        return bsPrice.add(ev).multiply(duration).multiply(demand);
+    }
 
 
     private List<ReservationDTO> getReservationDTOS(List<Reservation> reservations) {
