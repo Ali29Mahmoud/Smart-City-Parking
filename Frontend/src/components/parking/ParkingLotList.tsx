@@ -4,7 +4,6 @@ import { SpotGrid } from './SpotGrid';
 import { ReservationModal } from './ReservationModal';
 import type { ParkingLot, ParkingSpot } from '../../types';
 
-// Mock data - replace with actual API calls
 const mockParkingLots: ParkingLot[] = [
   {
     id: '1',

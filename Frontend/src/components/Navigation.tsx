@@ -35,10 +35,13 @@ export function Navigation() {
               <span>Profile</span>
             </Link>
             
-            <button className="flex items-center space-x-2 px-4 py-2 text-red-600 rounded-lg hover:bg-red-50">
-              <Icons.LogOut className="h-5 w-5" />
-              <span>Logout</span>
-            </button>
+            <button 
+                className="flex items-center space-x-2 px-4 py-2 text-red-600 rounded-lg hover:bg-red-50"
+                onClick={() => window.location.href = 'http://localhost:5173/login'}
+              >
+                <Icons.LogOut className="h-5 w-5" />
+                <span>Logout</span>
+              </button>
           </div>
         </div>
       </div>
