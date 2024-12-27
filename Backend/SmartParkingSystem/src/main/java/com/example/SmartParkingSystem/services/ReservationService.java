@@ -30,6 +30,7 @@ public class ReservationService {
         if (reservationDao.isSpotAvailable(reservationCreateDTO.getSpotId(), reservationCreateDTO.getScheduledCheckIn(),
                 reservationCreateDTO.getScheduledCheckOut())) {
             System.out.println("Spot Not Available");
+            return;
         }
         try {
             Reservation reservation = Reservation.builder()

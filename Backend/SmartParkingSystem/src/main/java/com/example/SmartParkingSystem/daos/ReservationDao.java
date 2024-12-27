@@ -36,7 +36,7 @@ public class ReservationDao {
 
     public void create(Reservation reservation) {
         String sql = """
-                INSERT INTO Reservation (driverId, spotId, status, checkIn, checkOut, scheduledCheckIn,
+                INSERT INTO Reservation (userID, spotId, status, checkIn, checkOut, scheduledCheckIn,
                     scheduledCheckOut, amount, paymentMethod, transactionId, createdAt)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -67,7 +67,7 @@ public class ReservationDao {
 
     public void update(Reservation reservation) {
         String sql = """
-                UPDATE Reservation SET driverId = ?, spotId = ?, status = ?, checkIn = ?, checkOut = ?,
+                UPDATE Reservation SET userID = ?, spotId = ?, status = ?, checkIn = ?, checkOut = ?,
                     scheduledCheckIn = ?, scheduledCheckOut = ?, amount = ?, paymentMethod = ?, transactionId = ?,
                     createdAt = ? WHERE id = ?
                 """;
@@ -95,7 +95,7 @@ public class ReservationDao {
 
     public List<Reservation> findAllByDriverId(Long driverId) {
         String sql = """
-                SELECT * FROM Reservation WHERE driverId = ? ORDER BY createdAt DESC
+                SELECT * FROM Reservation WHERE userID = ? ORDER BY createdAt DESC
                 """;
         return jdbcTemplate.query(sql, new ReservationRowMapper(), driverId);
     }
@@ -135,7 +135,7 @@ public class ReservationDao {
         public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
             return Reservation.builder()
                     .id(rs.getLong("id"))
-                    .driverId(rs.getInt("driverId"))
+                    .driverId(rs.getInt("userID"))
                     .spotId(rs.getInt("spotId"))
                     .status(ReservationStatus.valueOf(rs.getString("status")))
                     .checkIn(rs.getTimestamp("checkIn").toLocalDateTime())

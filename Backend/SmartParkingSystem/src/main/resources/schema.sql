@@ -134,7 +134,6 @@ CREATE TABLE Notification
 
 -- Add indexes for common queries and performance
 CREATE INDEX idx_drivers_unpaid_penalties ON Users (unpaidPenalties);
-CREATE INDEX idx_parking_lots_active ON ParkingLot (active);
 CREATE INDEX idx_reservations_status ON Reservation (status);
 CREATE INDEX idx_notifications_status ON Notification (status);
 CREATE INDEX idx_penalties_status ON Penalty (status);
