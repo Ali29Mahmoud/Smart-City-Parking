@@ -17,14 +17,14 @@ public class NotificationController {
     private final NotificationService notificationService;
 
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<String> createNotification(@RequestBody NotificationDTO notificationDTO) {
 
         notificationService.createNotification(notificationDTO);
         return ResponseEntity.ok("Notification created successfully");
     }
 
-    @GetMapping("/getNotifications/{driverID}")
+    @GetMapping("/{driverID}")
     public ResponseEntity<List<NotificationDTO>> getNotifications(@PathVariable int driverID) {
         return ResponseEntity.ok(notificationService.getNotifications(driverID));
     }
@@ -35,13 +35,13 @@ public class NotificationController {
         return ResponseEntity.ok("Notification marked as read successfully");
     }
 
-    @DeleteMapping("/deleteNotification/{notificationID}/{driverID}")
+    @DeleteMapping("/{notificationID}/{driverID}")
     public ResponseEntity<String> deleteNotification(@PathVariable int notificationID, @PathVariable int driverID) {
         notificationService.deleteNotification(notificationID);
         return ResponseEntity.ok("Notification deleted successfully");
     }
 
-    @DeleteMapping("/deleteAllNotifications/{driverID}")
+    @DeleteMapping("/all/{driverID}")
     public ResponseEntity<String> deleteAllNotifications(@PathVariable int driverID) {
         notificationService.deleteAllNotifications(driverID);
         return ResponseEntity.ok("All notifications deleted successfully");
