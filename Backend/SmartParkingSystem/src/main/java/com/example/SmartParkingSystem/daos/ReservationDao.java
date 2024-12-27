@@ -1,13 +1,18 @@
 package com.example.SmartParkingSystem.daos;
 
+import com.example.SmartParkingSystem.entities.PricingStructure;
 import com.example.SmartParkingSystem.entities.Reservation;
 import com.example.SmartParkingSystem.entities.ReservationStatus;
+import com.example.SmartParkingSystem.entities.SpotType;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +22,16 @@ public class ReservationDao {
 
     public ReservationDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Boolean isSpotAvailable(Integer spotId, LocalDateTime start, LocalDateTime end) {
+        String sql = """
+                SELECT COUNT(*) FROM Reservation
+                WHERE spotId = ?
+                AND NOT (? < scheduledCheckIn AND scheduledCheckOut < ?)
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, spotId, end, start);
+        return count != null && count == 0;
     }
 
     public void create(Reservation reservation) {
@@ -80,14 +95,14 @@ public class ReservationDao {
 
     public List<Reservation> findAllByDriverId(Long driverId) {
         String sql = """
-                SELECT * FROM Reservation WHERE driverId = ?
+                SELECT * FROM Reservation WHERE driverId = ? ORDER BY createdAt DESC
                 """;
         return jdbcTemplate.query(sql, new ReservationRowMapper(), driverId);
     }
 
     public List<Reservation> findAllBySpotId(Long spotId) {
         String sql = """
-                SELECT * FROM Reservation WHERE spotId = ?
+                SELECT * FROM Reservation WHERE spotId = ? ORDER BY scheduledCheckin
                 """;
         return jdbcTemplate.query(sql, new ReservationRowMapper(), spotId);
     }
@@ -98,6 +113,22 @@ public class ReservationDao {
                 """;
         return jdbcTemplate.query(sql, new ReservationRowMapper(), status.toString());
     }
+
+    public PricingStructure calculateReservationAmount(Integer spotId) {
+        String sql = """
+                SELECT basePrice, demandFactor, evFactor, availableSpots, type
+                FROM ParkingSpot JOIN ParkingLot ON ParkingSpot.parkingLotId = ParkingLot.id
+                WHERE ParkingSpot.id = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PricingStructure(
+                rs.getBigDecimal("basePrice"),
+                rs.getBigDecimal("demandFactor"),
+                rs.getBigDecimal("evFactor"),
+                rs.getInt("availableSpots"),
+                SpotType.valueOf(rs.getString("type"))
+        ), spotId);
+    }
+
 
     private static class ReservationRowMapper implements RowMapper<Reservation> {
         @Override

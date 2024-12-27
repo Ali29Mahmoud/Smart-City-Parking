@@ -19,9 +19,9 @@ public class ParkingLot {
     private Integer capacity;
     private Integer availableSpots;
     private BigDecimal basePrice;
-    private BigDecimal reservationFactor;
-    private BigDecimal availableSpotsFactor;
-    private boolean active;
+    private BigDecimal demandFactor;
+    private BigDecimal evFactor;
+    private Integer timeLimit;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

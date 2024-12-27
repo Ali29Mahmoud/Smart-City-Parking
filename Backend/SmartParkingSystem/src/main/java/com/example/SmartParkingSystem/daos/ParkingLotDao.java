@@ -20,8 +20,8 @@ public class ParkingLotDao {
 
     public void create(ParkingLot parkingLot) {
         String sql = """
-                INSERT INTO ParkingLot (location, name, capacity, availableSpots, basePrice, reservationFactor,
-                    availableSpotsFactor, active, createdAt, updatedAt)
+                INSERT INTO ParkingLot (location, name, capacity, availableSpots, basePrice, demandFactor,
+                    evFactor, timeLimit, createdAt, updatedAt)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         jdbcTemplate.update(sql,
@@ -30,9 +30,9 @@ public class ParkingLotDao {
                 parkingLot.getCapacity(),
                 parkingLot.getAvailableSpots(),
                 parkingLot.getBasePrice(),
-                parkingLot.getReservationFactor(),
-                parkingLot.getAvailableSpotsFactor(),
-                parkingLot.isActive(),
+                parkingLot.getDemandFactor(),
+                parkingLot.getEvFactor(),
+                parkingLot.getTimeLimit(),
                 parkingLot.getCreatedAt(),
                 parkingLot.getUpdatedAt());
     }
@@ -51,7 +51,7 @@ public class ParkingLotDao {
     public void update(ParkingLot parkingLot) {
         String sql = """
                 UPDATE ParkingLot SET location = ?, name = ?, capacity = ?, availableSpots = ?, basePrice = ?,
-                reservationFactor = ?, availableSpotsFactor = ?, active = ?, updatedAt = ? WHERE id = ?
+                demandFactor = ?, evFactor = ?, timeLimit = ?, updatedAt = ? WHERE id = ?
                 """;
         jdbcTemplate.update(sql,
                 parkingLot.getLocation(),
@@ -59,9 +59,9 @@ public class ParkingLotDao {
                 parkingLot.getCapacity(),
                 parkingLot.getAvailableSpots(),
                 parkingLot.getBasePrice(),
-                parkingLot.getReservationFactor(),
-                parkingLot.getAvailableSpotsFactor(),
-                parkingLot.isActive(),
+                parkingLot.getDemandFactor(),
+                parkingLot.getEvFactor(),
+                parkingLot.getTimeLimit(),
                 parkingLot.getUpdatedAt(),
                 parkingLot.getId());
     }
@@ -90,9 +90,9 @@ public class ParkingLotDao {
                     .capacity(rs.getInt("capacity"))
                     .availableSpots(rs.getInt("availableSpots"))
                     .basePrice(rs.getBigDecimal("basePrice"))
-                    .reservationFactor(rs.getBigDecimal("reservationFactor"))
-                    .availableSpotsFactor(rs.getBigDecimal("availableSpotsFactor"))
-                    .active(rs.getBoolean("active"))
+                    .demandFactor(rs.getBigDecimal("demandFactor"))
+                    .evFactor(rs.getBigDecimal("evFactor"))
+                    .timeLimit(rs.getInt("timeLimit"))
                     .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
                     .updatedAt(rs.getTimestamp("updatedAt").toLocalDateTime())
                     .build();
