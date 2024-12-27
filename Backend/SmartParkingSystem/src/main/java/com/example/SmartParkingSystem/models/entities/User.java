@@ -16,7 +16,7 @@ public class User {
     private Role role;
     private LocalDate updatedAt;
     public User() {
-        this.role = Role.DEFAULT_ROLE;
+        this.role = Role.DRIVER;
         this.hasUnpaidPenalties = false;
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
@@ -35,7 +35,7 @@ public class User {
         this.hasUnpaidPenalties = hasUnpaidPenalties;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.role = Role.DEFAULT_ROLE;
+        this.role = Role.DRIVER;
     }
 
     public Integer getId() { return id; }

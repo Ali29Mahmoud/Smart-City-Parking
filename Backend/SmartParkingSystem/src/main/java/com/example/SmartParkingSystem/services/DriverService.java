@@ -3,6 +3,7 @@ package com.example.SmartParkingSystem.services;
 import com.example.SmartParkingSystem.Security.JWTService;
 import com.example.SmartParkingSystem.models.dtos.DriverDTO;
 import com.example.SmartParkingSystem.models.entities.User;
+import com.example.SmartParkingSystem.models.enums.Role;
 import com.example.SmartParkingSystem.repositories.DriverRepository;
 import com.example.SmartParkingSystem.services.mappers.DriverDTOMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class DriverService {
 
     public void addDriver(DriverDTO driverDTO){
         User driver = driverDTOMapper.apply(driverDTO);
+        driver.setRole(Role.DRIVER);//Default user
         driverRepository.save(driver);
     }
     public ResponseEntity<String> login(String email){

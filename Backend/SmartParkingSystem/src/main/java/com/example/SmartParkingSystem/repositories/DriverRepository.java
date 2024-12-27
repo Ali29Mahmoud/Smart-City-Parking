@@ -19,6 +19,7 @@ public class DriverRepository {
     }
     private final RowMapper<User> rowMapper = (ResultSet rs, int rowNum) -> {
         User driver = new User();
+        System.out.println("Checking email: "+rs.getString("email"));
         driver.setId(rs.getInt("id"));
         driver.setEmail(rs.getString("email"));
         driver.setHashedPassword(rs.getString("hashedPassword"));
@@ -28,15 +29,13 @@ public class DriverRepository {
         driver.setHasUnpaidPenalties(rs.getBoolean("unpaidPenalties"));
         driver.setCreatedAt(rs.getDate("createdAt").toLocalDate());
         driver.setUpdatedAt(rs.getDate("updatedAt").toLocalDate());
-        driver.setRole( Role.valueOf(rs.getString("role")));
-        System.out.println("in row mapper: "+driver.getEmail());
         return driver;
     };
     public User save(User driver){
         String sql = """
             INSERT INTO users (email, hashedPassword, phoneNumber, licensePlate, 
-            name, unpaidPenalties, createdAt, updatedAt)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            name, unpaidPenalties, createdAt, updatedAt, role)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
         jdbcTemplate.update(sql,
                 driver.getEmail(),
@@ -46,7 +45,8 @@ public class DriverRepository {
                 driver.getName(),
                 driver.getHasUnpaidPenalties(),
                 driver.getCreatedAt(),
-                driver.getUpdatedAt()
+                driver.getUpdatedAt(),
+                driver.getRole().name()
         );
         return driver;
     }
@@ -63,11 +63,14 @@ public class DriverRepository {
         System.out.println("Finding by email: "+email);
         String sql = "SELECT * FROM users WHERE email = ?";
         try{
+            System.out.println("going to row mapper");
+            System.out.println("Sql: "+jdbcTemplate.queryForObject(sql, rowMapper, email));
             User driver = jdbcTemplate.queryForObject(sql, rowMapper, email);
             System.out.println(driver.getCreatedAt());
             return Optional.ofNullable(driver);
         }
-        catch (Exception e){
+        catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
