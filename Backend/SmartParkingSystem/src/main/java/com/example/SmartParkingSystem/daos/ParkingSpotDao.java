@@ -21,9 +21,11 @@ public class ParkingSpotDao {
     }
 
     public void create(ParkingSpot parkingSpot) {
-        String sql =
-                "INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, occupied)"
-                        + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, occupied)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
         jdbcTemplate.update(sql,
                 parkingSpot.getParkingLotId(),
                 parkingSpot.getSpotNumber(),
@@ -34,7 +36,9 @@ public class ParkingSpotDao {
     }
 
     public Optional<ParkingSpot> findById(Long id) {
-        String sql = "SELECT * FROM ParkingSpot WHERE id = ?";
+        String sql = """
+                SELECT * FROM ParkingSpot WHERE id = ?
+                """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ParkingSpotRowMapper(), id));
         } catch (Exception e) {
@@ -43,13 +47,17 @@ public class ParkingSpotDao {
     }
 
     public List<ParkingSpot> findAll(Long parkingLotId) {
-        String sql = "SELECT * FROM ParkingSpot WHERE parkingLotId = ? ORDER BY spotNumber";
+        String sql = """
+                SELECT * FROM ParkingSpot WHERE parkingLotId = ? ORDER BY spotNumber
+                """;
         return jdbcTemplate.query(sql, new ParkingSpotRowMapper(), parkingLotId);
     }
 
     public void update(ParkingSpot parkingSpot) {
-        String sql = "UPDATE ParkingSpot SET parkingLotId = ?, spotNumber = ?, size = ?, type = ?, handicapped = ?, " +
-                "occupied = ? WHERE id = ?";
+        String sql = """
+                UPDATE ParkingSpot SET parkingLotId = ?, spotNumber = ?, size = ?, type = ?, handicapped = ?,
+                occupied = ? WHERE id = ?
+                """;
         jdbcTemplate.update(sql,
                 parkingSpot.getParkingLotId(),
                 parkingSpot.getSpotNumber(),
@@ -61,13 +69,17 @@ public class ParkingSpotDao {
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM ParkingSpot WHERE id = ?";
+        String sql = """
+                DELETE FROM ParkingSpot WHERE id = ?
+                """;
         jdbcTemplate.update(sql, id);
     }
 
     public void createMultiple(Long parkingLotId, int spotNumberStart, int spotNumberEnd, String size, String type,
                                boolean handicapped) {
-        String sql = "CALL CreateMultipleParkingSpots(?, ?, ?, ?, ?, ?)";
+        String sql = """
+                CALL CreateMultipleParkingSpots(?, ?, ?, ?, ?, ?)
+                """;
         jdbcTemplate.update(sql, parkingLotId, spotNumberStart, spotNumberEnd, size, type, handicapped);
     }
 

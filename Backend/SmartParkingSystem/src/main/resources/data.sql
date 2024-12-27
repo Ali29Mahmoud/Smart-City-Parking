@@ -13,5 +13,3 @@ INSERT INTO ParkingLot (location, name, capacity, availableSpots, basePrice,
                         createdAt, updatedAt)
 VALUES ('Giza', 'Giza Parking', 300, 300, 30.0, 0.5, 0.5, true,
         now(), now());
-
-INSERT INTO Driver (name, email, phone, password) VALUES ('John Doe', ' jonDoe@example.com', '1234567890', 'password');   

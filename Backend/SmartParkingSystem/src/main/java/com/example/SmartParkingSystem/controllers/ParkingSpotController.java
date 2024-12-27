@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -26,7 +25,7 @@ public class ParkingSpotController {
     }
 
     @GetMapping(path = "/parking-spot/{id}")
-    public ResponseEntity<Optional<ParkingSpotDTO>> getParkingSpotById(@PathVariable Long id) {
+    public ResponseEntity<ParkingSpotDTO> getParkingSpotById(@PathVariable Long id) {
         return ResponseEntity.ok(parkingSpotService.findById(id));
     }
 
@@ -35,7 +34,7 @@ public class ParkingSpotController {
         return ResponseEntity.ok(parkingSpotService.findAll(parkingLotId));
     }
 
-    @PutMapping(path = "/parking-spot/{id}")
+    @PutMapping(path = "/parking-spot/")
     public ResponseEntity<Void> updateParkingSpotById(@RequestBody ParkingSpotDTO parkingSpotDTO) {
         parkingSpotService.updateParkingSpot(parkingSpotDTO);
         return ResponseEntity.ok().build();

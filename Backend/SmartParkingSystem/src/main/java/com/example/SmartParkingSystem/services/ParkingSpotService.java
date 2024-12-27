@@ -44,17 +44,19 @@ public class ParkingSpotService {
 
     }
 
-    public Optional<ParkingSpotDTO> findById(Long id) {
+    public ParkingSpotDTO findById(Long id) {
         Optional<ParkingSpot> parkingSpot = parkingSpotDao.findById(id);
-        return parkingSpot.map(spot -> ParkingSpotDTO.builder()
-                .id(spot.getId())
-                .parkingLotId(spot.getParkingLotId())
-                .spotNumber(spot.getSpotNumber())
-                .size(spot.getSize())
-                .type(spot.getType())
-                .handicapped(spot.getHandicapped())
-                .occupied(spot.getOccupied())
-                .build());
+        return parkingSpot.map(
+                spot -> ParkingSpotDTO.builder()
+                        .id(spot.getId())
+                        .parkingLotId(spot.getParkingLotId())
+                        .spotNumber(spot.getSpotNumber())
+                        .size(spot.getSize())
+                        .type(spot.getType())
+                        .handicapped(spot.getHandicapped())
+                        .occupied(spot.getOccupied())
+                        .build()
+        ).orElse(null);
     }
 
     public void deleteParkingSpotById(Long id) {
