@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/manager")
+@RequestMapping(path = "/api/lots")
 public class ParkingLotController {
     private final ParkingLotService parkingLotService;
 
@@ -17,29 +17,29 @@ public class ParkingLotController {
         this.parkingLotService = parkingLotService;
     }
 
-    @PostMapping(path = "/parking-lots")
+    @PostMapping
     public ResponseEntity<Void> createParkingLotById(@RequestBody ParkingLotCreateDTO parkingLotCreateDTO) {
         parkingLotService.createParkingLot(parkingLotCreateDTO);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(path = "/parking-lots/{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<ParkingLotDTO> getParkingLotById(@PathVariable Long id) {
         return ResponseEntity.ok(parkingLotService.findById(id));
     }
 
-    @GetMapping(path = "/parking-lots")
+    @GetMapping
     public ResponseEntity<List<ParkingLotDTO>> getAllParkingLots() {
         return ResponseEntity.ok(parkingLotService.findAll());
     }
 
-    @PutMapping(path = "/parking-lots/")
+    @PutMapping
     public ResponseEntity<Void> updateParkingLotById(@RequestBody ParkingLotDTO parkingLotDTO) {
         parkingLotService.updateParkingLot(parkingLotDTO);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path = "/parking-lots/{id}")
+    @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteParkingLotById(@PathVariable Long id) {
         parkingLotService.deleteParkingLotById(id);
         return ResponseEntity.ok().build();

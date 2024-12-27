@@ -33,7 +33,7 @@ public class ParkingSpotDao {
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getStatus());
+                parkingSpot.getStatus().toString());
     }
 
     public Optional<ParkingSpot> findById(Long id) {
@@ -65,7 +65,7 @@ public class ParkingSpotDao {
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getStatus(),
+                parkingSpot.getStatus().toString(),
                 parkingSpot.getId());
     }
 
