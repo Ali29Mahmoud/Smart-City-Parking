@@ -40,15 +40,22 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String jwt = authorizationHeader.substring(tokenStartIndex);
 
             final String email = jwtService.extractEmail(jwt);
+            String role = jwtService.extractRole(jwt);
+            System.out.println("JWT Filter - Email: " + email + ", Role: " + role); // Add this
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (email != null && authentication == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                System.out.println("JWT Filter - UserDetails authorities: " + userDetails.getAuthorities()); // Add this
 
                 if (jwtService.isValidToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null,
-                                    userDetails.getAuthorities());
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()  // This will now contain the correct role
+                            );
+                    System.out.println("JWT Filter - Setting authentication with authorities: " + authToken.getAuthorities()); // Add this
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

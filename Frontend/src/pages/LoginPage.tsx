@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
 import { AuthInput } from '../components/auth/AuthInput';
+import axios from 'axios';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,9 +11,23 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual authentication
-    console.log('Login:', { email, password });
-    navigate('/app');
+    
+    try {
+      const response = await axios.post('http://localhost:8081/login', {
+        email: email,
+        password: password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 200) {        
+        navigate('/app');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (

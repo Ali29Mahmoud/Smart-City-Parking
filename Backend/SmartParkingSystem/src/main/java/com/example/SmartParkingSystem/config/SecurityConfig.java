@@ -39,8 +39,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("api/manager/**").hasRole(Role.PARKING_MANAGER.name())
-                        .requestMatchers("/login/**", "/register/**", "/api/notifications/create").permitAll()
+                        .requestMatchers("/api/super/**").hasAuthority("ROLE_SYSTEM_ADMIN")
+                        .requestMatchers("api/manager/**").hasAuthority("Role_PARKING_MANAGER")
+                        .requestMatchers("/login/**", "/register/**", "/api/notifications/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -68,7 +69,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

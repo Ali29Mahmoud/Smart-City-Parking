@@ -29,6 +29,7 @@ public class DriverRepository {
         driver.setHasUnpaidPenalties(rs.getBoolean("unpaidPenalties"));
         driver.setCreatedAt(rs.getDate("createdAt").toLocalDate());
         driver.setUpdatedAt(rs.getDate("updatedAt").toLocalDate());
+        driver.setRole(Role.valueOf(rs.getString("role")));
         return driver;
     };
     public User save(User driver){

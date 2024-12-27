@@ -33,8 +33,8 @@ public class User {
         this.licencePlate = licencePlate;
         this.name = name;
         this.hasUnpaidPenalties = hasUnpaidPenalties;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
         this.role = Role.DRIVER;
     }
 
