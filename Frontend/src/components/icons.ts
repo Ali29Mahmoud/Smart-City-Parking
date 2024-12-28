@@ -15,6 +15,9 @@ import {
   Search,
   AlertTriangle,
   Bell,
+  Check,
+  Trash,
+  DollarSign,
 } from "lucide-react";
 
 export const Icons = {
@@ -33,4 +36,7 @@ export const Icons = {
   Search,
   AlertTriangle,
   Bell,
+  Check,
+  Trash,
+  DollarSign,
 };
