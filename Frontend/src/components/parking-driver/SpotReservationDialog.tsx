@@ -39,10 +39,8 @@ export function SpotReservationDialog({
 
   useEffect(() => {
     // Get driverId from localStorage when component mounts
-    let driverId = localStorage.getItem("driverId");
-    if (!driverId) {
-      driverId = "2"; // For testing purposes
-    }
+    const driverId = localStorage.getItem("userId");
+    console.log(driverId);
   }, []);
 
   React.useEffect(() => {
@@ -120,10 +118,8 @@ export function SpotReservationDialog({
   const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      let driverId = localStorage.getItem("driverId");
-      if (!driverId) {
-        driverId = "2"; // For testing purposes
-      }
+      const driverId = localStorage.getItem("userId");
+      console.log(driverId);
 
       const response = await fetch("http://localhost:8081/api/reservations", {
         method: "POST",
@@ -131,7 +127,7 @@ export function SpotReservationDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          driverId: parseInt(driverId),
+          driverId: driverId,
           spotId: spotId,
           scheduledCheckIn: checkIn,
           scheduledCheckOut: checkOut,
