@@ -8,6 +8,8 @@ import com.example.SmartParkingSystem.repositories.DriverRepository;
 import com.example.SmartParkingSystem.services.mappers.DriverDTOMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,11 +19,13 @@ public class DriverService {
     private DriverRepository driverRepository;
     private DriverDTOMapper driverDTOMapper;
     private JWTService jwtService;
+    private UserDetailsService userDetailsService;
     public DriverService(DriverRepository driverRepository, DriverDTOMapper driverDTOMapper
-                                ,JWTService jwtService){
+                                ,JWTService jwtService, UserDetailsService userDetailsService){
         this.driverRepository = driverRepository;
         this.driverDTOMapper = driverDTOMapper;
         this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     public void addDriver(DriverDTO driverDTO){
@@ -36,7 +40,8 @@ public class DriverService {
             User driver =optionalDriver.get();
             String driverEmail = driver.getEmail();
             System.out.println("Email authenticated");
-            response = new ResponseEntity<>(jwtService.generateToken(driverEmail), HttpStatus.OK);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            response = new ResponseEntity<>(jwtService.generateToken(userDetails), HttpStatus.OK);
         }
         else{
             response = new ResponseEntity<>("Driver is not registered", HttpStatus.UNAUTHORIZED);

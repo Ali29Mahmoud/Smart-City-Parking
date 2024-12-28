@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
 import { AuthInput } from '../components/auth/AuthInput';
+import axios from 'axios';
+import api from '../api/axios';
+
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,9 +13,26 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual authentication
-    console.log('Login:', { email, password });
-    navigate('/app');
+    
+    try {
+      const response = await api.post('/login', {
+        email: email,
+        password: password
+      });
+
+      if (response.status === 200) {
+        // Store the JWT token in localStorage
+        const token = response.data;
+        localStorage.setItem('token', token);
+        
+        // Set the default Authorization header for all future axios requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        navigate('/app');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
