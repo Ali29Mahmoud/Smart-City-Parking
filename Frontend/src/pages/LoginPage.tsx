@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthLayout } from '../components/auth/AuthLayout';
 import { AuthInput } from '../components/auth/AuthInput';
 import axios from 'axios';
+import api from '../api/axios';
+
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,16 +15,19 @@ export function LoginPage() {
     e.preventDefault();
     
     try {
-      const response = await axios.post('http://localhost:8081/login', {
+      const response = await api.post('/login', {
         email: email,
         password: password
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
 
-      if (response.status === 200) {        
+      if (response.status === 200) {
+        // Store the JWT token in localStorage
+        const token = response.data;
+        localStorage.setItem('token', token);
+        
+        // Set the default Authorization header for all future axios requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
         navigate('/app');
       }
     } catch (error) {
