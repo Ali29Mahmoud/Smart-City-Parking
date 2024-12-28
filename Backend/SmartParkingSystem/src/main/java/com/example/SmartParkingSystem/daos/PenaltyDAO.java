@@ -72,7 +72,6 @@ public class PenaltyDAO {
     public List<Penalty> getPenaltiesByReservationId(Long reservationId) {
         String sql = "SELECT * FROM Penalty WHERE reservationId = ?";
         return jdbcTemplate.query(sql, penaltyRowMapper, reservationId);
-    }
 
     public List<Penalty> getPenaltiesByUserId(Long userId) {
         String sql = "SELECT p.* FROM Penalty p " +
