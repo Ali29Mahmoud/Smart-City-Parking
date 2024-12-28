@@ -42,8 +42,9 @@ export function LoginPage() {
     });
 
     if (response.status === 200) {
-      const token = response.data;
+      const {token, userId} = response.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId.toString());
 
       // Set the default Authorization header for all future axios requests
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
