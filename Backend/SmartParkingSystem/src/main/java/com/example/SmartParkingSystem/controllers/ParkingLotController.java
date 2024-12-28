@@ -30,6 +30,7 @@ public class ParkingLotController {
 
     @GetMapping(path = "/parking-lots")
     public ResponseEntity<List<ParkingLotDTO>> getAllParkingLots() {
+        System.out.println("Fetched");
         return ResponseEntity.ok(parkingLotService.findAll());
     }
 

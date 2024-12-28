@@ -8,7 +8,9 @@ interface ParkingLotCardProps {
 }
 
 export function ParkingLotCard({ lot, onSelect }: ParkingLotCardProps) {
-  const availableSpots = lot.spots.filter(spot => spot.status === 'available').length;
+  // Safe check for spots array and calculate available spots
+  const availableSpots = lot.spots?.filter(spot => spot.status === 'available')?.length ?? 0;
+  const totalSpots = lot.spots?.length ?? lot.capacity ?? 0;
   
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -29,7 +31,7 @@ export function ParkingLotCard({ lot, onSelect }: ParkingLotCardProps) {
       <div className="flex items-center space-x-4 mt-4">
         <div className="flex items-center">
           <Icons.Car className="h-5 w-5 text-gray-500 mr-1" />
-          <span>{availableSpots} spots</span>
+          <span>{availableSpots} of {totalSpots} spots</span>
         </div>
         <div className="flex items-center">
           <Icons.EV className="h-5 w-5 text-gray-500 mr-1" />

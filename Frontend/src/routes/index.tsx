@@ -1,9 +1,11 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
-import { HomePage } from '../pages/DriverHomePage';
+import { DriverHomePage } from '../pages/DriverHomePage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { LoginPage } from '../pages/LoginPage';
 import { SignupPage } from '../pages/SignupPage';
+import { ParkingManagerHomePage } from '../pages/ParkingManagerHomePage';
+import { SystemAdminHomePage } from '../pages/SystemAdminHomePage';
 
 export const router = createBrowserRouter([
   {
@@ -11,12 +13,39 @@ export const router = createBrowserRouter([
     element: <Navigate to="/login" replace />,
   },
   {
-    path: '/app',
+    path: '/driverHomePage',
     element: <Layout />,
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <DriverHomePage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+    ],
+  },{
+    path: '/parkingManagerHomePage',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <ParkingManagerHomePage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+    ],
+  },
+  {
+    path: '/systemAdminHomePage',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <SystemAdminHomePage />,
       },
       {
         path: 'profile',
