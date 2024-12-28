@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/super/**").hasAuthority("ROLE_SYSTEM_ADMIN")
-                        .requestMatchers("api/manager/**").hasAuthority("Role_PARKING_MANAGER")
+                        .requestMatchers("api/manager/**").hasAuthority("ROLE_PARKING_MANAGER")
                         .requestMatchers("/login/**", "/register/**", "/api/notifications/**").permitAll()
                         .anyRequest().authenticated()
                 )
