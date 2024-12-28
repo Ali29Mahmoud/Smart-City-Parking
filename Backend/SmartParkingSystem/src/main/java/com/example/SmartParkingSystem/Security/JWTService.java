@@ -15,16 +15,26 @@ public class JWTService {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    public String generateToken(String email) {
+    // Update this method to accept UserDetails instead of just email
+    public String generateToken(UserDetails userDetails) {
         final int millisInADay = 86400000;
+
+        // Extract the raw role name without the ROLE_ prefix
+        String role = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                .orElse("");
+
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(userDetails.getUsername())
+                .claim("role", role)
                 .setIssuer("Parker")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + millisInADay))
                 .signWith(generateSecretKey())
                 .compact();
     }
+
 
     private SecretKey generateSecretKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -55,5 +65,13 @@ public class JWTService {
                 .parseClaimsJws(jwt)
                 .getBody()
                 .getExpiration();
+    }
+    public String extractRole(String jwt) {
+        return Jwts.parserBuilder()
+                .setSigningKey(generateSecretKey())
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody()
+                .get("role", String.class);
     }
 }

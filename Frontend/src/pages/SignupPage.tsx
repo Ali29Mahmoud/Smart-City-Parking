@@ -9,15 +9,59 @@ export function SignupPage() {
     email: '',
     password: '',
     licensePlate: '',
+    phoneNumber: '',
   });
   const navigate = useNavigate();
 
+
+  interface DriverDTO {
+    id?: number;
+    email: string;
+    hashedPassword: string;
+    phoneNumber: string;
+    licencePlate: string;
+    name: string;
+    hasUnpaidPenalties?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual registration
-    console.log('Signup:', formData);
-    navigate('/app');
+    
+    try {
+      // Create the DTO object from your form data
+      const driverDTO: DriverDTO = {
+        email: formData.email,
+        hashedPassword: formData.password, // Note: You might want to hash this before sending
+        phoneNumber: formData.phoneNumber,
+        licencePlate: formData.licensePlate,
+        name: formData.name,
+        hasUnpaidPenalties: false, // Default value
+      };
+  
+      const response = await fetch('http://localhost:8081/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(driverDTO),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Registration failed: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Registration successful:', data);
+      
+      // If registration is successful, navigate to the app
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration error:', error);
+    }
   };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -69,6 +113,16 @@ export function SignupPage() {
           type="text"
           required
           value={formData.licensePlate}
+          onChange={handleChange}
+        />
+
+        <AuthInput
+          label="Phone Number"
+          id="phoneNumber"
+          name="phoneNumber"
+          type="text"
+          required
+          value={formData.phoneNumber}
           onChange={handleChange}
         />
 

@@ -20,6 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = driverRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+
+        System.out.println("Loading user: " + email + " with role: " + user.getRole());
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getHashedPassword(),
