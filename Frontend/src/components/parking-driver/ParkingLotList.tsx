@@ -5,37 +5,6 @@ import type { ParkingLotDTO } from "../../types/ParkingLotDTO";
 import { ParkingSpotDTO } from "../../types/ParkingSpotDTO";
 import { Icons } from "../icons";
 
-// Mock data matching the DTO structure
-const mockParkingLots: ParkingLotDTO[] = [
-  {
-    id: 1,
-    name: "Downtown Parking",
-    location: "123 Main St",
-    capacity: 100,
-    availableSpots: 65,
-    basePrice: 5.0,
-    demandFactor: 1.2,
-    evFactor: 1.5,
-    timeLimit: 24,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    name: "Shopping Mall Parking",
-    location: "456 Market Ave",
-    capacity: 200,
-    availableSpots: 50,
-    basePrice: 3.5,
-    demandFactor: 1.1,
-    evFactor: 1.3,
-    timeLimit: 12,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  // Add more mock parking lots as needed
-];
-
 export function ParkingLotList() {
   const [parkingLots, setParkingLots] = useState<ParkingLotDTO[]>([]);
   const [selectedLot, setSelectedLot] = useState<ParkingLotDTO | null>(null);
@@ -48,16 +17,14 @@ export function ParkingLotList() {
   };
 
   useEffect(() => {
-    // Simulating API call
     const fetchParkingLots = async () => {
       try {
-        // In real implementation, this would be an API call
-        // const response = await fetch('/api/parking-lots');
-        // const data = await response.json();
-
-        // Simulating network delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setParkingLots(mockParkingLots);
+        const response = await fetch('http://localhost:8081/api/lots');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setParkingLots(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to load parking lots");

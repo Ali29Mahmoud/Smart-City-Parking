@@ -1,15 +1,11 @@
-
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Layout } from "../components/Layout";
-import { LotsPage } from "../pages/LotsPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { LoginPage } from "../pages/LoginPage";
 import { SignupPage } from "../pages/SignupPage";
-
-import { DriverHomePage } from '../pages/DriverHomePage';
-import { ParkingManagerHomePage } from '../pages/ParkingManagerHomePage';
-import { SystemAdminHomePage } from '../pages/SystemAdminHomePage';
-
+import { DriverHomePage } from "../pages/DriverHomePage";
+import { ParkingManagerHomePage } from "../pages/ParkingManagerHomePage";
+import { SystemAdminHomePage } from "../pages/SystemAdminHomePage";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +13,7 @@ export const router = createBrowserRouter([
     element: <Navigate to="/login" replace />,
   },
   {
-    path: '/driverHomePage',
+    path: "/driverHomePage",
     element: <Layout />,
     children: [
       {
@@ -25,12 +21,13 @@ export const router = createBrowserRouter([
         element: <DriverHomePage />,
       },
       {
-        path: 'profile',
+        path: "profile",
         element: <ProfilePage />,
       },
     ],
-  },{
-    path: '/parkingManagerHomePage',
+  },
+  {
+    path: "/parkingManagerHomePage",
     element: <Layout />,
     children: [
       {
@@ -38,13 +35,13 @@ export const router = createBrowserRouter([
         element: <ParkingManagerHomePage />,
       },
       {
-        path: 'profile',
+        path: "profile",
         element: <ProfilePage />,
       },
     ],
   },
   {
-    path: '/systemAdminHomePage',
+    path: "/systemAdminHomePage",
     element: <Layout />,
     children: [
       {
