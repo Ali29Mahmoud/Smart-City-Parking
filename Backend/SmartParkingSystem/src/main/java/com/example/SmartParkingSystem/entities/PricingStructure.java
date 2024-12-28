@@ -1,4 +1,4 @@
-package com.example.SmartParkingSystem.dtos.parkingLot;
+package com.example.SmartParkingSystem.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +11,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ParkingLotCreateDTO {
-
-    private String location;
-    private String name;
-    private Integer capacity;
+public class PricingStructure {
     private BigDecimal basePrice;
     private BigDecimal demandFactor;
     private BigDecimal evFactor;
-    private Integer timeLimit;
+    private Integer availableSpots;
+    private SpotType spotType;
 }

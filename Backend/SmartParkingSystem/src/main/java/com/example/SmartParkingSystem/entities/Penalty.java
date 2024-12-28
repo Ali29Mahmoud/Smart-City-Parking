@@ -8,20 +8,16 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ParkingLot {
+public class Penalty {
     private Long id;
-    private String location;
-    private String name;
-    private Integer capacity;
-    private Integer availableSpots;
-    private BigDecimal basePrice;
-    private BigDecimal demandFactor;
-    private BigDecimal evFactor;
-    private Integer timeLimit;
+    private Long reservationId;
+    private BigDecimal amount;
+    private String reason;
+    private String status;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

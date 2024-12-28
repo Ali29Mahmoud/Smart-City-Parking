@@ -1,15 +1,19 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { Layout } from '../components/Layout';
+
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { Layout } from "../components/Layout";
+import { LotsPage } from "../pages/LotsPage";
+import { ProfilePage } from "../pages/ProfilePage";
+import { LoginPage } from "../pages/LoginPage";
+import { SignupPage } from "../pages/SignupPage";
+
 import { DriverHomePage } from '../pages/DriverHomePage';
-import { ProfilePage } from '../pages/ProfilePage';
-import { LoginPage } from '../pages/LoginPage';
-import { SignupPage } from '../pages/SignupPage';
 import { ParkingManagerHomePage } from '../pages/ParkingManagerHomePage';
 import { SystemAdminHomePage } from '../pages/SystemAdminHomePage';
 
+
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Navigate to="/login" replace />,
   },
   {
@@ -48,17 +52,17 @@ export const router = createBrowserRouter([
         element: <SystemAdminHomePage />,
       },
       {
-        path: 'profile',
+        path: "profile",
         element: <ProfilePage />,
       },
     ],
   },
   {
-    path: '/login',
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <SignupPage />,
   },
 ]);

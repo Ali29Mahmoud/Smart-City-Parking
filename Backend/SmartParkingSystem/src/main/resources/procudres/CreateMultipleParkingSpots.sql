@@ -12,8 +12,8 @@ BEGIN
     DECLARE spotNumber INT;
     SET spotNumber = spotNumberStart;
     WHILE spotNumber <= spotNumberEnd DO
-            INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, occupied)
-            VALUES (parkingLotId, spotNumber, size, type, handicapped, FALSE);
+            INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, status)
+            VALUES (parkingLotId, spotNumber, size, type, handicapped, 'FREE');
             SET spotNumber = spotNumber + 1;
         END WHILE;
 END //

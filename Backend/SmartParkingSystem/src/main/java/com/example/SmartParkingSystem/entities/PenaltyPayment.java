@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ParkingSpot {
+public class PenaltyPayment {
     private Long id;
-    private Long parkingLotId;
-    private Integer spotNumber;
-    private SpotSize size;
-    private SpotType type;
-    private Boolean handicapped;
-    private SpotStatus status;
+    private Long penaltyId;
+    private String paymentMethod;
+    private String transactionId;
+    private LocalDateTime createdAt;
 }

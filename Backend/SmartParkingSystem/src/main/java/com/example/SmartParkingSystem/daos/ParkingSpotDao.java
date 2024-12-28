@@ -2,6 +2,7 @@ package com.example.SmartParkingSystem.daos;
 
 import com.example.SmartParkingSystem.entities.ParkingSpot;
 import com.example.SmartParkingSystem.entities.SpotSize;
+import com.example.SmartParkingSystem.entities.SpotStatus;
 import com.example.SmartParkingSystem.entities.SpotType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,7 +23,7 @@ public class ParkingSpotDao {
 
     public void create(ParkingSpot parkingSpot) {
         String sql = """
-                INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, occupied)
+                INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, status)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
@@ -32,7 +33,7 @@ public class ParkingSpotDao {
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getOccupied());
+                parkingSpot.getStatus().toString());
     }
 
     public Optional<ParkingSpot> findById(Long id) {
@@ -46,7 +47,7 @@ public class ParkingSpotDao {
         }
     }
 
-    public List<ParkingSpot> findAll(Long parkingLotId) {
+    public List<ParkingSpot> findAllByParkingLotId(Long parkingLotId) {
         String sql = """
                 SELECT * FROM ParkingSpot WHERE parkingLotId = ? ORDER BY spotNumber
                 """;
@@ -56,7 +57,7 @@ public class ParkingSpotDao {
     public void update(ParkingSpot parkingSpot) {
         String sql = """
                 UPDATE ParkingSpot SET parkingLotId = ?, spotNumber = ?, size = ?, type = ?, handicapped = ?,
-                occupied = ? WHERE id = ?
+                status = ? WHERE id = ?
                 """;
         jdbcTemplate.update(sql,
                 parkingSpot.getParkingLotId(),
@@ -64,7 +65,7 @@ public class ParkingSpotDao {
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getOccupied(),
+                parkingSpot.getStatus().toString(),
                 parkingSpot.getId());
     }
 
@@ -94,7 +95,7 @@ public class ParkingSpotDao {
                     .size(SpotSize.valueOf(rs.getString("size")))
                     .type(SpotType.valueOf(rs.getString("type")))
                     .handicapped(rs.getBoolean("handicapped"))
-                    .occupied(rs.getBoolean("occupied"))
+                    .status(SpotStatus.valueOf(rs.getString("status")))
                     .build();
         }
     }

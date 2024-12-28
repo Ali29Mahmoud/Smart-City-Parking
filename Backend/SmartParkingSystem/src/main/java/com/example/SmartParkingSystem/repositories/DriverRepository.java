@@ -34,7 +34,7 @@ public class DriverRepository {
     };
     public User save(User driver){
         String sql = """
-            INSERT INTO users (email, hashedPassword, phoneNumber, licensePlate, 
+            INSERT INTO Users (email, hashedPassword, phoneNumber, licensePlate, 
             name, unpaidPenalties, createdAt, updatedAt, role)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
@@ -52,7 +52,7 @@ public class DriverRepository {
         return driver;
     }
     public Optional<User> findById (Integer id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
+        String sql = "SELECT * FROM Users WHERE id = ?";
         try{
             User driver = jdbcTemplate.queryForObject(sql, rowMapper, id);
             return Optional.ofNullable(driver);
@@ -62,7 +62,7 @@ public class DriverRepository {
     }
     public Optional<User> findByEmail (String email){
         System.out.println("Finding by email: "+email);
-        String sql = "SELECT * FROM users WHERE email = ?";
+        String sql = "SELECT * FROM Users WHERE email = ?";
         try{
             System.out.println("going to row mapper");
             System.out.println("Sql: "+jdbcTemplate.queryForObject(sql, rowMapper, email));
@@ -76,12 +76,12 @@ public class DriverRepository {
         }
     }
     public List<User> findAll(){
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT * FROM Users";
         return jdbcTemplate.query(sql, rowMapper);
     }
     public void update(User driver) {
         String sql = """
-            UPDATE users 
+            UPDATE Users 
             SET email = ?, hashedPassword = ?, phoneNumber = ?, 
             licensePlate = ?, name = ?, unpaidPenalties = ?, updatedAt = ?
             WHERE id = ?
@@ -99,7 +99,7 @@ public class DriverRepository {
         );
     }
     public void deleteById(Integer id) {
-        String sql = "DELETE FROM users WHERE id = ?";
+        String sql = "DELETE FROM Users WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
