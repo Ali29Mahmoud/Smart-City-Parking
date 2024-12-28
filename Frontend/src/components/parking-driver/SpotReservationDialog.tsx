@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Icons } from "../icons";
 
@@ -12,23 +12,38 @@ interface SpotReservationDialogProps {
   onClose: () => void;
   spotNumber: number;
   parkingLotId: number;
+  spotId: number;
 }
+
+type PaymentMethod = "Cash" | "Visa" | "PayPal";
 
 export function SpotReservationDialog({
   isOpen,
   onClose,
   spotNumber,
   parkingLotId,
+  spotId,
 }: SpotReservationDialogProps) {
-  const [upcomingReservations, setUpcomingReservations] = useState<ReservationDTO[]>([]);
+  const [upcomingReservations, setUpcomingReservations] = useState<
+    ReservationDTO[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // New state for form
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
   const [calculating, setCalculating] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("Cash");
+
+  useEffect(() => {
+    // Get driverId from localStorage when component mounts
+    let driverId = localStorage.getItem("driverId");
+    if (!driverId) {
+      driverId = "2"; // For testing purposes
+    }
+  }, []);
 
   React.useEffect(() => {
     const fetchReservations = async () => {
@@ -67,21 +82,27 @@ export function SpotReservationDialog({
     e.preventDefault();
     setCalculating(true);
     try {
-      // In real implementation, this would be an API call
-      // const response = await fetch('/api/calculate-price', {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     parkingLotId,
-      //     spotNumber,
-      //     scheduledCheckIn: checkIn,
-      //     scheduledCheckOut: checkOut,
-      //   })
-      // });
-      // const data = await response.json();
+      const response = await fetch(
+        "http://localhost:8081/api/reservations/amount",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            spotId: spotId,
+            scheduledCheckIn: checkIn,
+            scheduledCheckOut: checkOut,
+          }),
+        }
+      );
 
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setCalculatedPrice(25.50); // Mock price
+      if (!response.ok) {
+        throw new Error("Failed to calculate price");
+      }
+
+      const data = await response.json();
+      setCalculatedPrice(data);
     } catch (err) {
       setError("Failed to calculate price");
     } finally {
@@ -89,25 +110,42 @@ export function SpotReservationDialog({
     }
   };
 
+  const generateTransactionId = () => {
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
+  };
+
   const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // In real implementation, this would be an API call
-      // const response = await fetch('/api/reservations', {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     parkingLotId,
-      //     spotNumber,
-      //     scheduledCheckIn: checkIn,
-      //     scheduledCheckOut: checkOut,
-      //     userId: getCurrentUserId(), // Get from auth context
-      //   })
-      // });
+      let driverId = localStorage.getItem("driverId");
+      if (!driverId) {
+        driverId = "2"; // For testing purposes
+      }
 
-      // Mock success
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch("http://localhost:8081/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          driverId: parseInt(driverId),
+          spotId: spotId,
+          scheduledCheckIn: checkIn,
+          scheduledCheckOut: checkOut,
+          amount: calculatedPrice,
+          paymentMethod: paymentMethod.toLowerCase(),
+          transactionId: generateTransactionId(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create reservation");
+      }
+
       onClose();
-      // You might want to show a success toast here
     } catch (err) {
       setError("Failed to create reservation");
     }
@@ -178,7 +216,12 @@ export function SpotReservationDialog({
           {/* Updated Reservation Form Section */}
           <div className="space-y-4">
             <h3 className="font-medium text-lg">Make a Reservation</h3>
-            <form onSubmit={calculatedPrice ? handleReservation : handleCalculatePrice} className="space-y-4">
+            <form
+              onSubmit={
+                calculatedPrice ? handleReservation : handleCalculatePrice
+              }
+              className="space-y-4"
+            >
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Check-in Date & Time
@@ -206,12 +249,31 @@ export function SpotReservationDialog({
               </div>
 
               {calculatedPrice && (
-                <div className="p-4 bg-blue-50 rounded-md">
-                  <p className="text-sm text-blue-700">Calculated Price:</p>
-                  <p className="text-2xl font-bold text-blue-900">
-                    ${calculatedPrice.toFixed(2)}
-                  </p>
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Payment Method
+                    </label>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) =>
+                        setPaymentMethod(e.target.value as PaymentMethod)
+                      }
+                      className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    >
+                      <option value="Cash">Cash</option>
+                      <option value="Visa">Visa</option>
+                      <option value="PayPal">PayPal</option>
+                    </select>
+                  </div>
+
+                  <div className="p-4 bg-blue-50 rounded-md">
+                    <p className="text-sm text-blue-700">Calculated Price:</p>
+                    <p className="text-2xl font-bold text-blue-900">
+                      ${calculatedPrice.toFixed(2)}
+                    </p>
+                  </div>
+                </>
               )}
 
               <button
@@ -225,9 +287,9 @@ export function SpotReservationDialog({
                     Calculating...
                   </>
                 ) : calculatedPrice ? (
-                  'Confirm Reservation'
+                  "Confirm Reservation"
                 ) : (
-                  'Calculate Price'
+                  "Calculate Price"
                 )}
               </button>
             </form>

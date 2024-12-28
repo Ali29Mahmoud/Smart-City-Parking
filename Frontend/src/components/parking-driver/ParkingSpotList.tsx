@@ -8,32 +8,6 @@ interface ParkingSpotListProps {
   onSpotSelect: (spot: ParkingSpotDTO) => void;
 }
 
-// Mock data
-const generateMockSpots = (parkingLotId: number): ParkingSpotDTO[] => {
-  const spots: ParkingSpotDTO[] = [];
-  const totalSpots = 24; // Multiple of 6 for nice grid layout
-
-  for (let i = 1; i <= totalSpots; i++) {
-    spots.push({
-      id: i,
-      parkingLotId: parkingLotId,
-      spotNumber: i,
-      size: Math.random() > 0.7 ? "LARGE" : "REGULAR",
-      type: Math.random() > 0.8 ? "ELECTRIC" : "GAS",
-      handicapped: Math.random() > 0.85,
-      status:
-        Math.random() > 0.6
-          ? "FREE"
-          : Math.random() > 0.5
-          ? "OCCUPIED"
-          : "RESERVED",
-    });
-  }
-
-  // Sort by spot number
-  return spots.sort((a, b) => a.spotNumber - b.spotNumber);
-};
-
 export function ParkingSpotList({
   parkingLotId,
   onSpotSelect,
@@ -48,10 +22,13 @@ export function ParkingSpotList({
   useEffect(() => {
     const fetchSpots = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockSpots = generateMockSpots(parkingLotId);
-        setSpots(mockSpots);
-        setFilteredSpots(mockSpots);
+        const response = await fetch(`http://localhost:8081/api/spots/lot/${parkingLotId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch parking spots');
+        }
+        const data = await response.json();
+        setSpots(data);
+        setFilteredSpots(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to load parking spots");
@@ -216,6 +193,7 @@ export function ParkingSpotList({
           onClose={() => setSelectedSpot(null)}
           spotNumber={selectedSpot.spotNumber}
           parkingLotId={parkingLotId}
+          spotId={selectedSpot.id}
         />
       )}
     </div>
