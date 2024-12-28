@@ -15,8 +15,8 @@ export interface ParkingSpot {
   id: string;
   lotId: string;
   number: string;
-  type: ParkingSpotType;
-  status: SpotStatus;
+  type: 'ev' | 'disabled' | 'regular';
+  status: 'available' | 'occupied';
   price: number;
 }
 
@@ -25,10 +25,11 @@ export interface ParkingLot {
   name: string;
   location: string;
   capacity: number;
-  spots: ParkingSpot[];
   basePrice: number;
-  multiplier: number; // For dynamic pricing
+  multiplier: number;
+  spots: ParkingSpot[];
 }
+
 
 export interface Reservation {
   id: string;
