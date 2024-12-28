@@ -67,7 +67,7 @@ public class ReservationController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping("/amount")
+    @PostMapping("/amount")
     public ResponseEntity<BigDecimal> calculateReservationAmount(@RequestBody ReservationCreateDTO reservationCreateDTO) {
         return ResponseEntity.ok(reservationService.calculateReservationAmount(reservationCreateDTO));
     }

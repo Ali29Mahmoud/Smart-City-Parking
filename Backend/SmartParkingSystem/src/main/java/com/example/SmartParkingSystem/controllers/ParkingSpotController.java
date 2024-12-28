@@ -7,10 +7,8 @@ import com.example.SmartParkingSystem.services.ParkingSpotService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping(path = "/api/spots")
+@RequestMapping(path = "/api/manager/spot")
 public class ParkingSpotController {
     private final ParkingSpotService parkingSpotService;
 
@@ -27,11 +25,6 @@ public class ParkingSpotController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<ParkingSpotDTO> getParkingSpotById(@PathVariable Long id) {
         return ResponseEntity.ok(parkingSpotService.findById(id));
-    }
-
-    @GetMapping(path = "lot/{parkingLotId}")
-    public ResponseEntity<List<ParkingSpotDTO>> getParkingSpotByParkingLotId(@PathVariable Long parkingLotId) {
-        return ResponseEntity.ok(parkingSpotService.findAll(parkingLotId));
     }
 
     @PutMapping

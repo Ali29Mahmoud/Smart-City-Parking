@@ -59,6 +59,7 @@ public class ReservationService {
                     .build();
             reservationDao.create(reservation);
         } catch (Exception e) {
+            System.out.println(e.toString());
             System.out.println("Error creating reservation");
         }
     }
@@ -131,8 +132,10 @@ public class ReservationService {
         }
         BigDecimal duration = BigDecimal.valueOf(reservationCreateDTO.getScheduledCheckOut().getHour() -
                 reservationCreateDTO.getScheduledCheckIn().getHour());
+        BigDecimal ans = bsPrice.add(ev).multiply(duration).multiply(demand);
+        System.out.println(ans);
 
-        return bsPrice.add(ev).multiply(duration).multiply(demand);
+        return ans;
     }
 
 
