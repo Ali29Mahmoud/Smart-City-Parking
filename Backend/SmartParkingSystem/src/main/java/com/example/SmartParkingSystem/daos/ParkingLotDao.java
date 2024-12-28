@@ -136,13 +136,26 @@ public class ParkingLotDao {
 
         System.out.println("Total Revenue: "+totalRevenue);
 
-        // TODO : Implement the query to get the noPenaltyCount, withPenaltyCount and totalPenalty
+
+        String penaltyStatsQuery = """
+        SELECT
+            SUM(CASE WHEN p.amount > 0 THEN 1 ELSE 0 END) AS withPenaltyCount,
+            SUM(p.amount) AS totalPenalty
+        FROM Reservation r JOIN Penalty p JOIN ParkingSpot ps ON r.spotId = ps.id
+        
+        WHERE ps.parkingLotId = ?
+        """;
+
+        Map<String, Object> penaltyStats = jdbcTemplate.queryForMap(penaltyStatsQuery, parkingLotId);
+
+        Integer withPenaltyCount = ((Number) penaltyStats.get("withPenaltyCount")).intValue();
+        Double totalPenalty = ((Number) penaltyStats.get("totalPenalty")).doubleValue();
 
         // Construct and return the Statistic object
         return new Statistic(
                 free, occupied, reserved,
                 totalReservations, activeReservations, pendingReservations, completedReservations, noShowReservations,
-                null, null, totalRevenue, null
+                null, withPenaltyCount, totalRevenue, totalPenalty
         );
     }
 

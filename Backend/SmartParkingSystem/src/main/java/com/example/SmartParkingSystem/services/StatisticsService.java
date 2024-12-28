@@ -1,8 +1,6 @@
 package com.example.SmartParkingSystem.services;
 
-
 import com.example.SmartParkingSystem.daos.ParkingLotDao;
-import com.example.SmartParkingSystem.daos.ParkingSpotDao;
 import com.example.SmartParkingSystem.daos.ReservationDao;
 import com.example.SmartParkingSystem.dtos.parkingLot.ParkingLotDTO;
 import com.example.SmartParkingSystem.entities.ParkingLot;
@@ -21,11 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatisticsService {
 
-
-
     private final ParkingLotDao parkingLotDao;
-
-    private final ParkingSpotDao parkingSpotDao;
 
     private final ReservationDao  reservationDao;
 
@@ -33,9 +27,6 @@ public class StatisticsService {
 
     private final DriverDTOMapper driverDTOMapper;
 
-    private final ParkingSpotService parkingSpotService;
-
-    private final ParkingLotService parkingLotService;
 
 
     // Calculate the statistics  of the parking lot
@@ -54,7 +45,7 @@ public class StatisticsService {
 
     // get top 10 parking lots with the most revenue
 
-    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = true)
     public List<ParkingLotDTO> getTop10ParkingLotsWithMostRevenue() {
         List<ParkingLot>  lots = reservationDao.getTop10Revenues();
 
@@ -62,7 +53,7 @@ public class StatisticsService {
     }
 
     // get top 10 reserving users
-    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = true)
     public List<DriverDTO> getTop10ReservingUsers() {
         return driverDTOMapper.toDTOs(reservationDao.getTop10Drivers());
     }
