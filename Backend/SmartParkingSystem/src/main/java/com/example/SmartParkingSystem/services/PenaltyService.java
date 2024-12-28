@@ -84,6 +84,19 @@ public class PenaltyService {
                 .collect(Collectors.toList());
     }
 
+    public List<PenaltyDTO> getPenaltiesByUserId(Long userId) {
+        List<Penalty> penalties = penaltyDAO.getPenaltiesByUserId(userId);
+        return penalties.stream()
+                .map(p -> PenaltyDTO.builder()
+                        .id(p.getId())
+                        .reservationId(p.getReservationId())
+                        .amount(p.getAmount())
+                        .reason(p.getReason())
+                        .status(p.getStatus())
+                        .createdAt(p.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 
 }
