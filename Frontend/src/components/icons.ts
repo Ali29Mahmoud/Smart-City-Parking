@@ -18,6 +18,7 @@ import {
   Check,
   Trash,
   DollarSign,
+  Plus,
 } from "lucide-react";
 
 export const Icons = {
@@ -39,4 +40,5 @@ export const Icons = {
   Check,
   Trash,
   DollarSign,
+  Plus,
 };
