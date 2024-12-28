@@ -1,17 +1,13 @@
-import React from 'react';
-import { Icons } from '../icons';
-import type { ParkingLot } from '../../types';
+import React from "react";
+import { Icons } from "../icons";
+import type { ParkingLotDTO } from "../../types/ParkingLotDTO";
 
 interface ParkingLotCardProps {
-  lot: ParkingLot;
-  onSelect: (lot: ParkingLot) => void;
+  lot: ParkingLotDTO;
+  onSelect: (lot: ParkingLotDTO) => void;
 }
 
 export function ParkingLotCard({ lot, onSelect }: ParkingLotCardProps) {
-  // Safe check for spots array and calculate available spots
-  const availableSpots = lot.spots?.filter(spot => spot.status === 'available')?.length ?? 0;
-  const totalSpots = lot.spots?.length ?? lot.capacity ?? 0;
-  
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <div className="flex justify-between items-start">
@@ -23,31 +19,42 @@ export function ParkingLotCard({ lot, onSelect }: ParkingLotCardProps) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-blue-600">${lot.basePrice}/hr</p>
-          <p className="text-sm text-gray-500">Dynamic pricing applied</p>
+          <p className="text-lg font-bold text-blue-600">
+            {lot.timeLimit}H Max
+          </p>
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-4 mt-4">
         <div className="flex items-center">
           <Icons.Car className="h-5 w-5 text-gray-500 mr-1" />
-          <span>{availableSpots} of {totalSpots} spots</span>
+          <span>
+            {lot.availableSpots} / {lot.capacity} spots
+          </span>
         </div>
-        <div className="flex items-center">
-          <Icons.EV className="h-5 w-5 text-gray-500 mr-1" />
-          <span>EV Charging</span>
-        </div>
-        <div className="flex items-center">
-          <Icons.Accessible className="h-5 w-5 text-gray-500 mr-1" />
-          <span>Accessible</span>
+
+        {/* Capacity percentage indicator */}
+        <div className="flex-1">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className={`h-2.5 rounded-full ${
+                lot.availableSpots / lot.capacity > 0.5
+                  ? "bg-green-600"
+                  : lot.availableSpots / lot.capacity > 0.2
+                  ? "bg-yellow-500"
+                  : "bg-red-600"
+              }`}
+              style={{ width: `${(lot.availableSpots / lot.capacity) * 100}%` }}
+            ></div>
+          </div>
         </div>
       </div>
-      
+
       <button
         onClick={() => onSelect(lot)}
         className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
       >
-        View & Reserve
+        View Details
       </button>
     </div>
   );
