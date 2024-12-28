@@ -41,7 +41,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/super/**").hasAuthority("ROLE_SYSTEM_ADMIN")
                         .requestMatchers("api/manager/**").hasAuthority("ROLE_PARKING_MANAGER")
-                        .requestMatchers("/login/**", "/register/**", "/api/notifications/**").permitAll()
+                        .requestMatchers("/login/**", "/register/**", "/api/notifications/**", "api/lots/**",
+                                "api/spots/**", "api/reservations/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

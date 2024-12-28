@@ -6,10 +6,8 @@ import com.example.SmartParkingSystem.services.ParkingLotService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping(path = "/api/lots")
+@RequestMapping(path = "/api/manager/lot")
 public class ParkingLotController {
     private final ParkingLotService parkingLotService;
 
@@ -28,11 +26,6 @@ public class ParkingLotController {
         return ResponseEntity.ok(parkingLotService.findById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ParkingLotDTO>> getAllParkingLots() {
-        System.out.println("Fetched");
-        return ResponseEntity.ok(parkingLotService.findAll());
-    }
 
     @PutMapping
     public ResponseEntity<Void> updateParkingLotById(@RequestBody ParkingLotDTO parkingLotDTO) {
