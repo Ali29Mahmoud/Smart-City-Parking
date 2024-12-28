@@ -4,6 +4,10 @@ import { ParkingLotCard } from './components/ParkingLotCard';
 import { SpotGrid } from './components/SpotGrid';
 import { ReservationModal } from './components/ReservationModal';
 import type { ParkingLot, ParkingSpot } from './types';
+import { getUserRole } from './utils/auth';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/Login';
+import DriverLayout from './components/DriverLayout';
 
 // Mock data - replace with actual API calls
 const mockParkingLots: ParkingLot[] = [
@@ -26,6 +30,29 @@ const mockParkingLots: ParkingLot[] = [
   // Add more parking lots here
 ];
 
+const ProtectedRoute = ({ children, allowedRoles }: { children: JSX.Element, allowedRoles: string[] }) => {
+  const userRole = getUserRole();
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+};
+
+function RequireAuth({ children }: { children: () => JSX.Element }) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children();
+}
+
 function App() {
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<ParkingSpot | null>(null);
@@ -39,46 +66,30 @@ function App() {
   };
 
   return (
-    <Layout>
-      {!selectedLot ? (
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">Available Parking Lots</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockParkingLots.map((lot) => (
-              <ParkingLotCard
-                key={lot.id}
-                lot={lot}
-                onSelect={setSelectedLot}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">{selectedLot.name}</h1>
-            <button
-              onClick={() => setSelectedLot(null)}
-              className="text-blue-600 hover:text-blue-700"
-            >
-              ← Back to lots
-            </button>
-          </div>
-          <SpotGrid
-            spots={selectedLot.spots}
-            onSpotSelect={setSelectedSpot}
-          />
-        </div>
-      )}
+    <Routes>
+      {/* Redirect root to appropriate page based on role */}
+      <Route path="/" element={
+        <RequireAuth>
+          {() => {
+            const role = getUserRole();
+            if (role === 'DRIVER') return <Navigate to="/driver/home" replace />;
+            if (role === 'ADMIN') return <Navigate to="/admin/dashboard" replace />;
+            return <Navigate to="/login" replace />;
+          }}
+        </RequireAuth>
+      } />
+      
+      <Route path="/login" element={<Login />} />
+      
+      <Route path="/driver/*" element={
+        <ProtectedRoute allowedRoles={['DRIVER']}>
+          <DriverLayout />
+        </ProtectedRoute>
+      } />
 
-      {selectedSpot && (
-        <ReservationModal
-          spot={selectedSpot}
-          onClose={() => setSelectedSpot(null)}
-          onReserve={handleReservation}
-        />
-      )}
-    </Layout>
+      {/* Catch all unknown routes */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
