@@ -2,6 +2,7 @@ package com.example.SmartParkingSystem.services;
 
 import com.example.SmartParkingSystem.Security.JWTService;
 import com.example.SmartParkingSystem.models.dtos.DriverDTO;
+import com.example.SmartParkingSystem.models.dtos.LoginResponseDTO;
 import com.example.SmartParkingSystem.models.entities.User;
 import com.example.SmartParkingSystem.models.enums.Role;
 import com.example.SmartParkingSystem.repositories.DriverRepository;
@@ -33,19 +34,20 @@ public class DriverService {
         driver.setRole(Role.DRIVER);//Default user
         driverRepository.save(driver);
     }
-    public ResponseEntity<String> login(String email){
+    public ResponseEntity<?> login(String email){
         Optional<User> optionalDriver = driverRepository.findByEmail(email);
-        ResponseEntity<String> response;
+
         if(optionalDriver.isPresent()){
             User driver =optionalDriver.get();
             String driverEmail = driver.getEmail();
             System.out.println("Email authenticated");
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            response = new ResponseEntity<>(jwtService.generateToken(userDetails), HttpStatus.OK);
+            String token = jwtService.generateToken(userDetails);
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(token, driver.getId());
+            return new ResponseEntity<>(loginResponseDTO, HttpStatus.OK);
         }
         else{
-            response = new ResponseEntity<>("Driver is not registered", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Driver is not registered", HttpStatus.UNAUTHORIZED);
         }
-        return response;
     }
 }

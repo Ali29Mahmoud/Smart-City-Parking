@@ -18,7 +18,7 @@ public class LoginController {
         this.gmailValidationService = gmailValidationService;
     }
     @PostMapping("")
-    public ResponseEntity<String> login(@RequestBody RegistrationDTO registrationDTO){
+    public ResponseEntity<?> login(@RequestBody RegistrationDTO registrationDTO){
         String gmail = registrationDTO.email();
         return driverService.login(gmail);
     }
