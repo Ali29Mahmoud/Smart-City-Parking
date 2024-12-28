@@ -1,7 +1,7 @@
 // Centralize icon imports to avoid duplication and make updates easier
-import { 
+import {
   Car,
-  User, 
+  User,
   LayoutDashboard,
   LogOut,
   MapPin,
@@ -9,8 +9,13 @@ import {
   Accessibility, // Changed from Wheelchair
   X,
   Clock,
-  CreditCard
-} from 'lucide-react';
+  CreditCard,
+  ParkingCircle,
+  ArrowLeft,
+  Search,
+  AlertTriangle,
+  Bell,
+} from "lucide-react";
 
 export const Icons = {
   Car,
@@ -22,5 +27,10 @@ export const Icons = {
   Accessible: Accessibility,
   Close: X,
   Clock,
-  CreditCard
+  CreditCard,
+  ParkingCircle,
+  ArrowLeft,
+  Search,
+  AlertTriangle,
+  Bell,
 };
