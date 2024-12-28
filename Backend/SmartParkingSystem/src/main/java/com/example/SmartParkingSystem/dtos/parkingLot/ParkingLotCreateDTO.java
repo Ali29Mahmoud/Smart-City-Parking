@@ -17,6 +17,7 @@ public class ParkingLotCreateDTO {
     private String name;
     private Integer capacity;
     private BigDecimal basePrice;
-    private BigDecimal reservationFactor;
-    private BigDecimal availableSpotsFactor;
+    private BigDecimal demandFactor;
+    private BigDecimal evFactor;
+    private Integer timeLimit;
 }

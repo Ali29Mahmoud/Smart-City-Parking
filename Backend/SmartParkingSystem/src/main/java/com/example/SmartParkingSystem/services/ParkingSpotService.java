@@ -5,6 +5,7 @@ import com.example.SmartParkingSystem.dtos.parkingSpot.ParkingSpotBatchCreateDTO
 import com.example.SmartParkingSystem.dtos.parkingSpot.ParkingSpotCreateDTO;
 import com.example.SmartParkingSystem.dtos.parkingSpot.ParkingSpotDTO;
 import com.example.SmartParkingSystem.entities.ParkingSpot;
+import com.example.SmartParkingSystem.entities.SpotStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ParkingSpotService {
                 .size(parkingSpotCreateDTO.getSize())
                 .type(parkingSpotCreateDTO.getType())
                 .handicapped(parkingSpotCreateDTO.getHandicapped())
-                .occupied(false)
+                .status(SpotStatus.FREE)
                 .build();
         parkingSpotDao.create(parkingSpot);
     }
@@ -38,23 +39,25 @@ public class ParkingSpotService {
                 .size(parkingSpotDTO.getSize())
                 .type(parkingSpotDTO.getType())
                 .handicapped(parkingSpotDTO.getHandicapped())
-                .occupied(parkingSpotDTO.getOccupied())
+                .status(parkingSpotDTO.getStatus())
                 .build();
         parkingSpotDao.update(parkingSpot);
 
     }
 
-    public Optional<ParkingSpotDTO> findById(Long id) {
+    public ParkingSpotDTO findById(Long id) {
         Optional<ParkingSpot> parkingSpot = parkingSpotDao.findById(id);
-        return parkingSpot.map(spot -> ParkingSpotDTO.builder()
-                .id(spot.getId())
-                .parkingLotId(spot.getParkingLotId())
-                .spotNumber(spot.getSpotNumber())
-                .size(spot.getSize())
-                .type(spot.getType())
-                .handicapped(spot.getHandicapped())
-                .occupied(spot.getOccupied())
-                .build());
+        return parkingSpot.map(
+                spot -> ParkingSpotDTO.builder()
+                        .id(spot.getId())
+                        .parkingLotId(spot.getParkingLotId())
+                        .spotNumber(spot.getSpotNumber())
+                        .size(spot.getSize())
+                        .type(spot.getType())
+                        .handicapped(spot.getHandicapped())
+                        .status(spot.getStatus())
+                        .build()
+        ).orElse(null);
     }
 
     public void deleteParkingSpotById(Long id) {
@@ -62,7 +65,7 @@ public class ParkingSpotService {
     }
 
     public List<ParkingSpotDTO> findAll(Long parkingLotId) {
-        List<ParkingSpot> parkingSpots = parkingSpotDao.findAll(parkingLotId);
+        List<ParkingSpot> parkingSpots = parkingSpotDao.findAllByParkingLotId(parkingLotId);
         return parkingSpots.stream()
                 .map(parkingSpot -> ParkingSpotDTO.builder()
                         .id(parkingSpot.getId())
@@ -71,7 +74,7 @@ public class ParkingSpotService {
                         .size(parkingSpot.getSize())
                         .type(parkingSpot.getType())
                         .handicapped(parkingSpot.getHandicapped())
-                        .occupied(parkingSpot.getOccupied())
+                        .status(parkingSpot.getStatus())
                         .build())
                 .toList();
     }

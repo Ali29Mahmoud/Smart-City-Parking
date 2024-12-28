@@ -16,5 +16,5 @@ public class ParkingSpot {
     private SpotSize size;
     private SpotType type;
     private Boolean handicapped;
-    private Boolean occupied;
+    private SpotStatus status;
 }

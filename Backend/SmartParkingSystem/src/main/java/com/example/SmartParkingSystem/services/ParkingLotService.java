@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,39 +19,41 @@ public class ParkingLotService {
         this.parkingLotDao = parkingLotDao;
     }
 
-    public void createParkingLot(ParkingLotCreateDTO parkingLotDTO) {
+    public void createParkingLot(ParkingLotCreateDTO parkingLotCreateDTO) {
         ParkingLot parkingLot = ParkingLot.builder()
-                .location(parkingLotDTO.getLocation())
-                .name(parkingLotDTO.getName())
-                .capacity(parkingLotDTO.getCapacity())
-                .availableSpots(parkingLotDTO.getCapacity())
-                .basePrice(parkingLotDTO.getBasePrice())
-                .reservationFactor(parkingLotDTO.getReservationFactor())
-                .availableSpotsFactor(parkingLotDTO.getAvailableSpotsFactor())
+                .location(parkingLotCreateDTO.getLocation())
+                .name(parkingLotCreateDTO.getName())
+                .capacity(parkingLotCreateDTO.getCapacity())
+                .availableSpots(parkingLotCreateDTO.getCapacity())
+                .basePrice(parkingLotCreateDTO.getBasePrice())
+                .demandFactor(parkingLotCreateDTO.getDemandFactor())
+                .evFactor(parkingLotCreateDTO.getEvFactor())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .active(true)
+                .timeLimit(parkingLotCreateDTO.getTimeLimit())
                 .build();
         parkingLotDao.create(parkingLot);
     }
 
     public ParkingLotDTO findById(Long id) {
-        ParkingLot parkingLot = parkingLotDao.findById(id);
-        return ParkingLotDTO.builder()
-                .id(parkingLot.getId())
-                .location(parkingLot.getLocation())
-                .name(parkingLot.getName())
-                .capacity(parkingLot.getCapacity())
-                .availableSpots(parkingLot.getAvailableSpots())
-                .basePrice(parkingLot.getBasePrice())
-                .reservationFactor(parkingLot.getReservationFactor())
-                .availableSpotsFactor(parkingLot.getAvailableSpotsFactor())
-                .active(parkingLot.isActive())
-                .createdAt(parkingLot.getCreatedAt())
-                .updatedAt(parkingLot.getUpdatedAt())
-                .build();
-
+        Optional<ParkingLot> parkingLot = parkingLotDao.findById(id);
+        return parkingLot.map(
+                lot -> ParkingLotDTO.builder()
+                        .id(lot.getId())
+                        .location(lot.getLocation())
+                        .name(lot.getName())
+                        .capacity(lot.getCapacity())
+                        .availableSpots(lot.getAvailableSpots())
+                        .basePrice(lot.getBasePrice())
+                        .demandFactor(lot.getDemandFactor())
+                        .evFactor(lot.getEvFactor())
+                        .timeLimit(lot.getTimeLimit())
+                        .createdAt(lot.getCreatedAt())
+                        .updatedAt(lot.getUpdatedAt())
+                        .build()
+        ).orElse(null);
     }
+
     public void updateParkingLot(ParkingLotDTO parkingLotDTO) {
         ParkingLot parkingLot = ParkingLot.builder()
                 .id(parkingLotDTO.getId())
@@ -59,13 +62,14 @@ public class ParkingLotService {
                 .capacity(parkingLotDTO.getCapacity())
                 .availableSpots(parkingLotDTO.getAvailableSpots())
                 .basePrice(parkingLotDTO.getBasePrice())
-                .reservationFactor(parkingLotDTO.getReservationFactor())
-                .availableSpotsFactor(parkingLotDTO.getAvailableSpotsFactor())
-                .active(parkingLotDTO.isActive())
+                .demandFactor(parkingLotDTO.getDemandFactor())
+                .evFactor(parkingLotDTO.getEvFactor())
+                .timeLimit(parkingLotDTO.getTimeLimit())
                 .updatedAt(LocalDateTime.now())
                 .build();
         parkingLotDao.update(parkingLot);
     }
+
     public void deleteParkingLotById(Long id) {
         parkingLotDao.deleteById(id);
     }
@@ -80,9 +84,9 @@ public class ParkingLotService {
                         .capacity(parkingLot.getCapacity())
                         .availableSpots(parkingLot.getAvailableSpots())
                         .basePrice(parkingLot.getBasePrice())
-                        .reservationFactor(parkingLot.getReservationFactor())
-                        .availableSpotsFactor(parkingLot.getAvailableSpotsFactor())
-                        .active(parkingLot.isActive())
+                        .demandFactor(parkingLot.getDemandFactor())
+                        .evFactor(parkingLot.getEvFactor())
+                        .timeLimit(parkingLot.getTimeLimit())
                         .createdAt(parkingLot.getCreatedAt())
                         .updatedAt(parkingLot.getUpdatedAt())
                         .build())

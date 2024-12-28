@@ -2,6 +2,7 @@ package com.example.SmartParkingSystem.daos;
 
 import com.example.SmartParkingSystem.entities.ParkingSpot;
 import com.example.SmartParkingSystem.entities.SpotSize;
+import com.example.SmartParkingSystem.entities.SpotStatus;
 import com.example.SmartParkingSystem.entities.SpotType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,20 +22,24 @@ public class ParkingSpotDao {
     }
 
     public void create(ParkingSpot parkingSpot) {
-        String sql =
-                "INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, occupied)"
-                        + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO ParkingSpot (parkingLotId, spotNumber, size, type, handicapped, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
         jdbcTemplate.update(sql,
                 parkingSpot.getParkingLotId(),
                 parkingSpot.getSpotNumber(),
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getOccupied());
+                parkingSpot.getStatus().toString());
     }
 
     public Optional<ParkingSpot> findById(Long id) {
-        String sql = "SELECT * FROM ParkingSpot WHERE id = ?";
+        String sql = """
+                SELECT * FROM ParkingSpot WHERE id = ?
+                """;
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ParkingSpotRowMapper(), id));
         } catch (Exception e) {
@@ -42,32 +47,40 @@ public class ParkingSpotDao {
         }
     }
 
-    public List<ParkingSpot> findAll(Long parkingLotId) {
-        String sql = "SELECT * FROM ParkingSpot WHERE parkingLotId = ? ORDER BY spotNumber";
+    public List<ParkingSpot> findAllByParkingLotId(Long parkingLotId) {
+        String sql = """
+                SELECT * FROM ParkingSpot WHERE parkingLotId = ? ORDER BY spotNumber
+                """;
         return jdbcTemplate.query(sql, new ParkingSpotRowMapper(), parkingLotId);
     }
 
     public void update(ParkingSpot parkingSpot) {
-        String sql = "UPDATE ParkingSpot SET parkingLotId = ?, spotNumber = ?, size = ?, type = ?, handicapped = ?, " +
-                "occupied = ? WHERE id = ?";
+        String sql = """
+                UPDATE ParkingSpot SET parkingLotId = ?, spotNumber = ?, size = ?, type = ?, handicapped = ?,
+                status = ? WHERE id = ?
+                """;
         jdbcTemplate.update(sql,
                 parkingSpot.getParkingLotId(),
                 parkingSpot.getSpotNumber(),
                 parkingSpot.getSize().toString(),
                 parkingSpot.getType().toString(),
                 parkingSpot.getHandicapped(),
-                parkingSpot.getOccupied(),
+                parkingSpot.getStatus().toString(),
                 parkingSpot.getId());
     }
 
     public void deleteById(Long id) {
-        String sql = "DELETE FROM ParkingSpot WHERE id = ?";
+        String sql = """
+                DELETE FROM ParkingSpot WHERE id = ?
+                """;
         jdbcTemplate.update(sql, id);
     }
 
     public void createMultiple(Long parkingLotId, int spotNumberStart, int spotNumberEnd, String size, String type,
                                boolean handicapped) {
-        String sql = "CALL CreateMultipleParkingSpots(?, ?, ?, ?, ?, ?)";
+        String sql = """
+                CALL CreateMultipleParkingSpots(?, ?, ?, ?, ?, ?)
+                """;
         jdbcTemplate.update(sql, parkingLotId, spotNumberStart, spotNumberEnd, size, type, handicapped);
     }
 
@@ -82,7 +95,7 @@ public class ParkingSpotDao {
                     .size(SpotSize.valueOf(rs.getString("size")))
                     .type(SpotType.valueOf(rs.getString("type")))
                     .handicapped(rs.getBoolean("handicapped"))
-                    .occupied(rs.getBoolean("occupied"))
+                    .status(SpotStatus.valueOf(rs.getString("status")))
                     .build();
         }
     }
