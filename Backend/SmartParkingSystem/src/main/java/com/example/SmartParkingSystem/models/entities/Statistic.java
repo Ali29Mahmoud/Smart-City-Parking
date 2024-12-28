@@ -12,17 +12,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Statistic {
 
-    private int numberOfParkingSpots;
-    private int numberOfFreeSpots;
-    private int numberOfOccupiedSpots;
-    private int numberOfHandicappedSpots;
-    private int numberOfSmallSpots;
-    private int numberOfMediumSpots;
-    private int numberOfLargeSpots;
-    private int numberOfReservations;
+    private Integer freeSpots;
+    private Integer occupiedSpots;
+    private Integer reservedSpots;
 
-    private int numberOfPenalties;
-    private int numberOfUnpaidPenalties;
+    private Integer totalReservations;
+    private Integer activeReservations;
+    private Integer pendingReservations;
+    private Integer completedReservations;
+    private Integer noShowReservations;
 
+    private Integer noPenaltyCount;
+    private Integer withPenaltyCount;
+
+    private Double totalRevenue;
+    private Double totalPenalty;
 
 }
+

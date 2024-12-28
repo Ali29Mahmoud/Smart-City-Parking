@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -81,94 +82,70 @@ public class ParkingLotDao {
         return jdbcTemplate.query(sql, new ParkingLotRowMapper());
     }
 
-    public Statistic getLotStatistics (Long parkingLotId) {
 
-        // create a transaction to get the statistics of the parking lot
+    public Statistic getLotStatistics(Long parkingLotId) {
 
-
-        String q1 = """
-               SELECT count(*) FROM ParkingSpot WHERE parkingLotId = ? AND status = 'FREE'
-                """;
-        Integer free = jdbcTemplate.queryForObject(q1, Integer.class, parkingLotId);
-
-        String q2 = """
-               SELECT count(*) FROM ParkingSpot WHERE parkingLotId = ? AND status = 'OCCUPIED'
-                """;
-        Integer occupied = jdbcTemplate.queryForObject(q2, Integer.class, parkingLotId);
-
-        String q3 = """
-               SELECT count(*) FROM ParkingSpot WHERE parkingLotId = ? AND status = 'RESERVED'
-                """;
-
-        Integer reserved = jdbcTemplate.queryForObject(q3, Integer.class, parkingLotId);
-
-        String q4 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ?
-                """;
-
-        Integer totalReservations = jdbcTemplate.queryForObject(q4, Integer.class, parkingLotId);
-
-        String q5 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND status = 'ACTIVE'
-                """;
-
-        Integer activeReservations = jdbcTemplate.queryForObject(q5, Integer.class, parkingLotId);
+        // treat as one transaction
 
 
+        String parkingSpotStatsQuery = """
+        SELECT
+            SUM(CASE WHEN status = 'FREE' THEN 1 ELSE 0 END) AS freeCount,
+            SUM(CASE WHEN status = 'OCCUPIED' THEN 1 ELSE 0 END) AS occupiedCount,
+            SUM(CASE WHEN status = 'RESERVED' THEN 1 ELSE 0 END) AS reservedCount
+        FROM ParkingSpot
+        WHERE parkingLotId = ?
+        """;
 
-        String q6 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND status = 'PENDING'
-                """;
+        Map<String, Object> parkingSpotStats = jdbcTemplate.queryForMap(parkingSpotStatsQuery, parkingLotId);
 
-        Integer pendingReservations = jdbcTemplate.queryForObject(q6, Integer.class, parkingLotId);
+        Integer free = ((Number) parkingSpotStats.get("freeCount")).intValue();
+        Integer occupied = ((Number) parkingSpotStats.get("occupiedCount")).intValue();
+        Integer reserved = ((Number) parkingSpotStats.get("reservedCount")).intValue();
 
-        String q7 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND status = 'COMPLETED'
-                """;
+        String reservationStatsQuery = """
+        SELECT
+            COUNT(*) AS totalReservations,
+            SUM(CASE WHEN r.status = 'ACTIVE' THEN 1 ELSE 0 END) AS activeReservations,
+            SUM(CASE WHEN r.status = 'PENDING' THEN 1 ELSE 0 END) AS pendingReservations,
+            SUM(CASE WHEN r.status = 'COMPLETED' THEN 1 ELSE 0 END) AS completedReservations,
+            SUM(CASE WHEN r.status = 'NO_SHOW' THEN 1 ELSE 0 END) AS noShowReservations
+        
+        FROM Reservation r JOIN ParkingSpot ps ON r.spotId = ps.id
+        WHERE ps.parkingLotId = ? 
+        """;
 
-        Integer completedReservations = jdbcTemplate.queryForObject(q7, Integer.class, parkingLotId);
+        Map<String, Object> reservationStats = jdbcTemplate.queryForMap(reservationStatsQuery, parkingLotId);
 
-        String q8 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND status = 'NO_SHOW'
-                """;
-
-        Integer noShowReservations = jdbcTemplate.queryForObject(q8, Integer.class, parkingLotId);
-
-
-        // get penalty statistics
-
-        String q9 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND penalty = 0
-                """;
-
-        Integer noPenalty = jdbcTemplate.queryForObject(q9, Integer.class, parkingLotId);
-
-        String q10 = """
-               SELECT count(*) FROM Reservation WHERE parkingLotId = ? AND penalty > 0
-                """;
-
-        Integer withPenalty = jdbcTemplate.queryForObject(q10, Integer.class, parkingLotId);
-
-        // get the total revenue
-
-        String q11 = """
-               SELECT sum(totalPrice) FROM Reservation WHERE parkingLotId = ?
-                """;
-
-        Double totalRevenue = jdbcTemplate.queryForObject(q11, Double.class, parkingLotId);
-
-        // get the total revenue
-
-        String q12 = """
-               SELECT sum(penalty) FROM Reservation WHERE parkingLotId = ?
-                """;
-
-        Double totalPenalty = jdbcTemplate.queryForObject(q12, Double.class, parkingLotId);
+        Integer totalReservations = ((Number) reservationStats.get("totalReservations")).intValue();
+        Integer activeReservations = ((Number) reservationStats.get("activeReservations")).intValue();
+        Integer pendingReservations = ((Number) reservationStats.get("pendingReservations")).intValue();
+        Integer completedReservations = ((Number) reservationStats.get("completedReservations")).intValue();
+        Integer noShowReservations = ((Number) reservationStats.get("noShowReservations")).intValue();
 
 
-        return new Statistic();
+            String revenueStatsQuery = """
+        
+        SELECT SUM(r.amount) AS totalRevenue
+        FROM Reservation r JOIN ParkingSpot ps ON r.spotId = ps.id
+        WHERE ps.parkingLotId = ?
+        """;
 
+        Map<String, Object> revenueStats = jdbcTemplate.queryForMap(revenueStatsQuery, parkingLotId);
+        Double totalRevenue = ((Number) revenueStats.get("totalRevenue")).doubleValue();
+
+        System.out.println("Total Revenue: "+totalRevenue);
+
+        // TODO : Implement the query to get the noPenaltyCount, withPenaltyCount and totalPenalty
+
+        // Construct and return the Statistic object
+        return new Statistic(
+                free, occupied, reserved,
+                totalReservations, activeReservations, pendingReservations, completedReservations, noShowReservations,
+                null, null, totalRevenue, null
+        );
     }
+
 
     private static class ParkingLotRowMapper implements RowMapper<ParkingLot> {
         @Override
