@@ -1,7 +1,6 @@
-import React from 'react';
-import { ProfileInfo } from '../components/profile/ProfileInfo';
-import { ReservationHistory } from '../components/profile/ReservationHistory';
-import { PaymentMethods } from '../components/profile/PaymentMethods';
+import React from "react";
+import { ProfileInfo } from "../components/profile/ProfileInfo";
+import { ReservationHistory } from "../components/profile/ReservationHistory";
 
 export function ProfilePage() {
   return (
@@ -11,7 +10,6 @@ export function ProfilePage() {
         <ProfileInfo />
         <div className="lg:col-span-2 space-y-8">
           <ReservationHistory />
-          <PaymentMethods />
         </div>
       </div>
     </div>
