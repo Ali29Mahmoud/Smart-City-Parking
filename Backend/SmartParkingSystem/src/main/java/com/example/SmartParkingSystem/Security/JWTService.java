@@ -17,7 +17,7 @@ public class JWTService {
 
     // Update this method to accept UserDetails instead of just email
     public String generateToken(UserDetails userDetails) {
-        final int millisInADay = 86400000;
+        final long millisInAWeek = 7 * 24 * 60 * 60 * 1000L; // 7 days
 
         // Extract the raw role name without the ROLE_ prefix
         String role = userDetails.getAuthorities().stream()
@@ -30,7 +30,7 @@ public class JWTService {
                 .claim("role", role)
                 .setIssuer("Parker")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + millisInADay))
+                .setExpiration(new Date(System.currentTimeMillis() + millisInAWeek))
                 .signWith(generateSecretKey())
                 .compact();
     }
