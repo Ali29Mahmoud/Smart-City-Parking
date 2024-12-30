@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Icons } from "./icons";
+import { useNotifications } from '../contexts/NotificationContext';
 
 export function Navigation() {
   const location = useLocation();
+  const { unreadCount, updateUnreadCount } = useNotifications();
+
+  // Initial fetch
+  useEffect(() => {
+    updateUnreadCount();
+  }, [updateUnreadCount]);
+
+  // Polling
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateUnreadCount();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [updateUnreadCount]);
 
   // Helper to determine the base path based on current location
   const getBasePath = () => {
@@ -40,15 +56,27 @@ export function Navigation() {
 
           {/* Navigation Items */}
           <div className="flex items-center space-x-2">
-            {/* Notifications */}
+            {/* Reservations */}
+            <Link
+              to={`${getBasePath()}/reservations`}
+              className={getNavItemClass("/reservations")}
+            >
+              <Icons.Calendar className="h-5 w-5" />
+              <span className="hidden sm:inline">Reservations</span>
+            </Link>
+
+            {/* Notifications with Badge */}
             <Link
               to={`${getBasePath()}/notifications`}
               className={getNavItemClass("/notifications")}
             >
               <div className="relative">
                 <Icons.Bell className="h-5 w-5" />
-                {/* Notification badge - show when there are notifications */}
-                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full border-2 border-white">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </div>
               <span className="hidden sm:inline">Notifications</span>
             </Link>

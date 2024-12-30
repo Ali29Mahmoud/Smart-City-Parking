@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/super/**").hasAuthority("ROLE_SYSTEM_ADMIN")
                         .requestMatchers("api/manager/**").hasAuthority("ROLE_PARKING_MANAGER")
                         .requestMatchers("/login/**", "/register/**", "/api/notifications/**", "api/lots/**",
-                                "api/spots/**", "api/reservations/**", "api/manager/lot/**").permitAll()
+                                "api/spots/**", "api/reservations/**", "api/manager/lot/**", "api").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

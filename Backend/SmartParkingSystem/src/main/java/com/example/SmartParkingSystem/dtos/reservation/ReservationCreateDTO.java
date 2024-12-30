@@ -16,7 +16,5 @@ public class ReservationCreateDTO {
     private Integer spotId;
     private LocalDateTime scheduledCheckIn;
     private LocalDateTime scheduledCheckOut;
-    private String amount;
     private String paymentMethod;
-    private String transactionId;
 }

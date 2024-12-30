@@ -2,12 +2,10 @@ package com.example.SmartParkingSystem.daos;
 
 import com.example.SmartParkingSystem.entities.*;
 import com.example.SmartParkingSystem.models.entities.User;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -59,7 +57,6 @@ public class ReservationDao {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new ReservationRowMapper(), id));
         } catch (Exception e) {
-            System.out.println(e.toString());
             return Optional.empty();
         }
     }
@@ -92,11 +89,31 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Reservation> findAllByDriverId(Long driverId) {
+    public List<ReservationView> findAllByDriverId(Long driverId) {
         String sql = """
-                SELECT * FROM Reservation WHERE userID = ? ORDER BY createdAt DESC
+                SELECT ParkingLot.location, ParkingLot.name, ParkingSpot.spotNumber, Reservation.status, Reservation.checkIn,
+                    Reservation.checkOut, Reservation.scheduledCheckIn, Reservation.scheduledCheckOut, Reservation.amount,
+                    Reservation.paymentMethod, Reservation.transactionId, Reservation.createdAt
+                FROM
+                    Reservation JOIN ParkingSystem.ParkingSpot
+                    ON Reservation.spotId = ParkingSpot.id
+                    JOIN ParkingSystem.ParkingLot
+                    ON ParkingSpot.parkingLotId = ParkingLot.id
+                WHERE userID = ?
+                ORDER BY scheduledCheckIn DESC
                 """;
-        return jdbcTemplate.query(sql, new ReservationRowMapper(), driverId);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ReservationView.builder()
+                .location(rs.getString("location"))
+                .name(rs.getString("name"))
+                .spotNumber(rs.getInt("spotNumber"))
+                .status(ReservationStatus.valueOf(rs.getString("status")))
+                .scheduledCheckIn(rs.getTimestamp("scheduledCheckIn").toLocalDateTime())
+                .scheduledCheckOut(rs.getTimestamp("scheduledCheckOut").toLocalDateTime())
+                .amount(rs.getBigDecimal("amount"))
+                .paymentMethod(rs.getString("paymentMethod"))
+                .transactionId(rs.getString("transactionId"))
+                .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                .build(), driverId);
     }
 
     public List<Reservation> findAllBySpotId(Long spotId) {
@@ -144,19 +161,16 @@ public class ReservationDao {
                
                 SELECT u.id,u.name,COUNT(*) as count
                     FROM Reservation r JOIN
-                    users u
+                    Users u
                     GROUP BY u.id
                     ORDER BY count DESC
                      LIMIT 10;
                 """;
-        return jdbcTemplate.query(sql, new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(rs.getInt("id"));
-                user.setName(rs.getString("name"));
-                return user;
-            }
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setName(rs.getString("name"));
+            return user;
         });
         }
 
@@ -166,20 +180,17 @@ public class ReservationDao {
                
                 SELECT p.id,p.name,COUNT(*) as count
                     FROM Reservation r JOIN
-                    parkinglot p
+                    ParkingLot p
                     GROUP BY p.id
                     ORDER BY count DESC
                      LIMIT 10;
                 """;
 
-        return jdbcTemplate.query(sql, new RowMapper<ParkingLot>() {
-            @Override
-            public ParkingLot mapRow(ResultSet rs, int rowNum) throws SQLException {
-                ParkingLot parkingLot = new ParkingLot();
-                parkingLot.setId((long) rs.getInt("id"));
-                parkingLot.setName(rs.getString("name"));
-                return parkingLot;
-            }
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            ParkingLot parkingLot = new ParkingLot();
+            parkingLot.setId((long) rs.getInt("id"));
+            parkingLot.setName(rs.getString("name"));
+            return parkingLot;
         });
     }
 
@@ -189,21 +200,26 @@ public class ReservationDao {
                 
                     SELECT p.id,p.name,SUM(r.amount) as revenue
                         FROM Reservation r JOIN
-                        parkinglot p
+                        ParkingLot p
                         GROUP BY p.id
                         ORDER BY revenue DESC
                         LIMIT 10;
                     """;
 
-            return jdbcTemplate.query(sql, new RowMapper<ParkingLot>() {
-                @Override
-                public ParkingLot mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    ParkingLot parkingLot = new ParkingLot();
-                    parkingLot.setId((long) rs.getInt("id"));
-                    parkingLot.setName(rs.getString("name"));
-                    return parkingLot;
-                }
+            return jdbcTemplate.query(sql, (rs, rowNum) -> {
+                ParkingLot parkingLot = new ParkingLot();
+                parkingLot.setId((long) rs.getInt("id"));
+                parkingLot.setName(rs.getString("name"));
+                return parkingLot;
             });
+    }
+
+    public List<Reservation> findUpcomingReservationsBySpotId(Long spotId, LocalDateTime now) {
+        String sql = """
+                SELECT * FROM Reservation WHERE spotId = ? AND scheduledCheckOut > ? ORDER BY scheduledCheckIn
+                """;
+        return jdbcTemplate.query(sql, new ReservationRowMapper(), spotId, now);
+
     }
 
     private static class ReservationRowMapper implements RowMapper<Reservation> {
@@ -230,4 +246,5 @@ public class ReservationDao {
             return timestamp != null ? timestamp.toLocalDateTime() : null;
         }
     }
+
 }

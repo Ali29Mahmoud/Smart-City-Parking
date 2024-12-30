@@ -46,6 +46,11 @@ public class NotificationController {
         notificationService.deleteAllNotifications(driverID);
         return ResponseEntity.ok("All notifications deleted successfully");
     }
+
+    @GetMapping("/unread/count/{driverID}")
+    public ResponseEntity<Integer> getUnreadNotificationsCount(@PathVariable int driverID) {
+        return ResponseEntity.ok(notificationService.getUnreadNotificationsCount(driverID));
+    }
  
 
 }

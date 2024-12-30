@@ -2,6 +2,7 @@ package com.example.SmartParkingSystem.controllers;
 
 import com.example.SmartParkingSystem.dtos.reservation.ReservationCreateDTO;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationDTO;
+import com.example.SmartParkingSystem.dtos.reservation.ReservationViewDTO;
 import com.example.SmartParkingSystem.entities.ReservationStatus;
 import com.example.SmartParkingSystem.services.ReservationService;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -22,9 +24,26 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createReservation(@RequestBody ReservationCreateDTO reservationCreateDTO) {
-        reservationService.createReservation(reservationCreateDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> createReservation(@RequestBody ReservationCreateDTO reservationCreateDTO) {
+        try {
+            boolean success = reservationService.createReservation(reservationCreateDTO);
+            if (success) {
+                return ResponseEntity.ok().body(Map.of(
+                    "status", "success",
+                    "message", "Reservation created successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", "Spot is not available for the selected time period"
+                ));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "status", "error",
+                "message", e.getMessage()
+            ));
+        }
     }
 
     @GetMapping("/{id}")
@@ -49,7 +68,7 @@ public class ReservationController {
     }
 
     @GetMapping("/driver/{driverId}")
-    public ResponseEntity<List<ReservationDTO>> getReservationsByDriverId(@PathVariable Long driverId) {
+    public ResponseEntity<List<ReservationViewDTO>> getReservationsByDriverId(@PathVariable Long driverId) {
         return ResponseEntity.ok(reservationService.findAllByDriverId(driverId));
     }
 
@@ -68,7 +87,24 @@ public class ReservationController {
         }
     }
     @PostMapping("/amount")
-    public ResponseEntity<BigDecimal> calculateReservationAmount(@RequestBody ReservationCreateDTO reservationCreateDTO) {
-        return ResponseEntity.ok(reservationService.calculateReservationAmount(reservationCreateDTO));
+    public ResponseEntity<?> calculateReservationAmount(@RequestBody ReservationCreateDTO reservationCreateDTO) {
+        try {
+            BigDecimal amount = reservationService.calculateReservationAmount(reservationCreateDTO);
+            return ResponseEntity.ok(amount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Failed to calculate amount"
+            ));
+        }
+    }
+
+    @GetMapping("/spots/{spotId}/upcoming")
+    public ResponseEntity<List<ReservationDTO>> getUpcomingReservations(@PathVariable Long spotId) {
+        List<ReservationDTO> upcomingReservations = reservationService.getUpcomingReservations(spotId);
+        return ResponseEntity.ok(upcomingReservations);
     }
 }

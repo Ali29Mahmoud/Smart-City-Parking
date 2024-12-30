@@ -38,4 +38,8 @@ public class NotificationService {
     public void deleteAllNotifications(int driverID) {
         notificationDAO.deleteAllNotifications(driverID);
     }
+
+    public int getUnreadNotificationsCount(int driverID) {
+        return notificationDAO.getUnreadNotificationsCount(driverID);
+    }
 }

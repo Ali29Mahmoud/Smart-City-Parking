@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Add these to your global CSS */
+.profile-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optional: Add if you want to hide scrollbars but keep functionality */
+@media (min-width: 1024px) {
+  .profile-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .profile-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .profile-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+  }
+}
