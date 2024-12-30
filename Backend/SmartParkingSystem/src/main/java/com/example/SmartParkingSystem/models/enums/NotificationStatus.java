@@ -1,4 +1,4 @@
-package com.example.SmartParkingSystem.models.enums;
+package com.example.SmartParkingSystem.models.enums ;
 
 public enum NotificationStatus {
     SENT,

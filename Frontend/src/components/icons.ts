@@ -19,6 +19,12 @@ import {
   Trash,
   DollarSign,
   Plus,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPinIcon,
+  AlertCircle,
+  MapPinned,
 } from "lucide-react";
 
 export const Icons = {
@@ -41,4 +47,10 @@ export const Icons = {
   Trash,
   DollarSign,
   Plus,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPinIcon,
+  AlertCircle,
+  MapPinned,
 };

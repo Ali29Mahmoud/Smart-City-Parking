@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { ProfilePage } from "../pages/ProfilePage";
 import { LoginPage } from "../pages/LoginPage";
@@ -6,16 +6,34 @@ import { SignupPage } from "../pages/SignupPage";
 import { DriverHomePage } from "../pages/DriverHomePage";
 import { ParkingManagerHomePage } from "../pages/ParkingManagerHomePage";
 import { SystemAdminHomePage } from "../pages/SystemAdminHomePage";
-import { NotificationsPage } from "../pages/NotificationPage";
+import { NotificationsPage } from "../pages/NotificationsPage";
+import { ReservationsPage } from "../pages/ReservationsPage";
+import { NotificationProvider } from "../contexts/NotificationContext";
+
+function LayoutWithProvider() {
+  return (
+    <NotificationProvider>
+      <Layout />
+    </NotificationProvider>
+  );
+}
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/login" replace />,
+    element: <LoginPage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />,
   },
   {
     path: "/driverHomePage",
-    element: <Layout />,
+    element: <LayoutWithProvider />,
     children: [
       {
         index: true,
@@ -26,6 +44,10 @@ export const router = createBrowserRouter([
         element: <ProfilePage />,
       },
       {
+        path: "reservations",
+        element: <ReservationsPage />,
+      },
+      {
         path: "notifications",
         element: <NotificationsPage />,
       },
@@ -33,7 +55,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/parkingManagerHomePage",
-    element: <Layout />,
+    element: <LayoutWithProvider />,
     children: [
       {
         index: true,
@@ -47,7 +69,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/systemAdminHomePage",
-    element: <Layout />,
+    element: <LayoutWithProvider />,
     children: [
       {
         index: true,
@@ -58,13 +80,5 @@ export const router = createBrowserRouter([
         element: <ProfilePage />,
       },
     ],
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/signup",
-    element: <SignupPage />,
   },
 ]);

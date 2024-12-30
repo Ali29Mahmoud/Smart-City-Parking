@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { NotificationCard } from "./NotificationCard";
-import { Notification, NotificationStatus } from "../../types/Notification";
+import { Notification } from "../../types/Notification";
+import { useNotifications } from "../../contexts/NotificationContext";
+import { Icons } from "../icons";
 
 export function NotificationList() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { decrementCount, updateUnreadCount } = useNotifications();
 
   const driverId = localStorage.getItem("userId");
   const API_BASE_URL = "http://localhost:8081/api/notifications";
@@ -34,7 +37,6 @@ export function NotificationList() {
     }
   };
 
-  // Fetch notifications when component mounts
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -49,14 +51,20 @@ export function NotificationList() {
         throw new Error("Failed to mark notification as read");
       }
 
+      // Optimistically update the count
+      decrementCount();
+      
       // Update local state
       setNotifications(
         notifications.map((notification) =>
           notification.id === id
-            ? { ...notification, status: NotificationStatus.READ }
+            ? { ...notification, status: "READ" }
             : notification
         )
       );
+
+      // Update the actual count in the background
+      updateUnreadCount();
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
       setError("Failed to mark notification as read");
@@ -77,6 +85,8 @@ export function NotificationList() {
 
       // Update local state
       setNotifications(notifications.filter((n) => n.id !== id));
+      // Update the count in case we deleted an unread notification
+      updateUnreadCount();
     } catch (error) {
       console.error("Failed to delete notification:", error);
       setError("Failed to delete notification");
@@ -97,16 +107,38 @@ export function NotificationList() {
 
       // Clear local state
       setNotifications([]);
+      // Update the count
+      updateUnreadCount();
     } catch (error) {
       console.error("Failed to delete all notifications:", error);
       setError("Failed to delete all notifications");
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="animate-pulse space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="flex items-center space-x-2 text-red-600">
+          <Icons.AlertCircle className="h-5 w-5" />
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Notifications</h2>
         <div className="flex gap-2">
           <button
             onClick={fetchNotifications}
@@ -125,12 +157,6 @@ export function NotificationList() {
           )}
         </div>
       </div>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
 
       {notifications.length === 0 ? (
         <p className="text-gray-500 text-center py-8">No notifications found</p>

@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ReservationService {
@@ -27,23 +29,36 @@ public class ReservationService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void createReservation(ReservationCreateDTO reservationCreateDTO) {
+    public boolean createReservation(ReservationCreateDTO reservationCreateDTO) {
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Validate against current time
+        if (reservationCreateDTO.getScheduledCheckIn().isBefore(now)) {
+            throw new IllegalArgumentException("Check-in time must be in the future");
+        }
+
+        // Check spot availability
         if (!reservationDao.isSpotAvailable(
                 reservationCreateDTO.getSpotId(),
                 reservationCreateDTO.getScheduledCheckIn(),
                 reservationCreateDTO.getScheduledCheckOut()
         )) {
-            System.out.println("Spot Not Available");
-            return;
+            return false;
         }
-        // calculate duration of reservation in hours ceil(scheduledCheckOut - scheduledCheckIn)
+
+        // Check time limit
         Integer timeLimit = reservationDao.getTimeLimitBySpotId(reservationCreateDTO.getSpotId());
         Duration duration = Duration.between(reservationCreateDTO.getScheduledCheckIn(), reservationCreateDTO.getScheduledCheckOut());
         int durationInHours = (int) Math.ceil(duration.getSeconds() / 3600.0);
         if (timeLimit != null && durationInHours > timeLimit) {
-            System.out.println("Reservation duration exceeds time limit");
-            return;
+            throw new IllegalArgumentException("Reservation duration exceeds time limit");
         }
+
+        // Calculate amount
+        BigDecimal amount = calculateReservationAmount(reservationCreateDTO);
+        
+        // Generate transaction ID
+        String transactionId = UUID.randomUUID().toString();
 
         try {
             Reservation reservation = Reservation.builder()
@@ -51,16 +66,16 @@ public class ReservationService {
                     .spotId(reservationCreateDTO.getSpotId())
                     .scheduledCheckIn(reservationCreateDTO.getScheduledCheckIn())
                     .scheduledCheckOut(reservationCreateDTO.getScheduledCheckOut())
-                    .amount(new BigDecimal(reservationCreateDTO.getAmount()))
+                    .amount(amount)
                     .paymentMethod(reservationCreateDTO.getPaymentMethod())
-                    .transactionId(reservationCreateDTO.getTransactionId())
+                    .transactionId(transactionId)
                     .status(ReservationStatus.PENDING)
                     .createdAt(LocalDateTime.now())
                     .build();
             reservationDao.create(reservation);
+            return true;
         } catch (Exception e) {
-            System.out.println(e.toString());
-            System.out.println("Error creating reservation");
+            throw new RuntimeException("Error creating reservation: " + e.getMessage());
         }
     }
 
@@ -121,23 +136,56 @@ public class ReservationService {
     }
 
     public BigDecimal calculateReservationAmount(ReservationCreateDTO reservationCreateDTO) {
+        LocalDateTime now = LocalDateTime.now();
+        
+        // Validate against current time
+        if (reservationCreateDTO.getScheduledCheckIn().isBefore(now)) {
+            throw new IllegalArgumentException("Check-in time must be in the future");
+        }
+
+        // Validate time period
+        if (reservationCreateDTO.getScheduledCheckOut().isBefore(reservationCreateDTO.getScheduledCheckIn()) ||
+            reservationCreateDTO.getScheduledCheckOut().equals(reservationCreateDTO.getScheduledCheckIn())) {
+            throw new IllegalArgumentException("Check-out time must be after check-in time");
+        }
+
         PricingStructure ps = reservationDao.calculateReservationAmount(reservationCreateDTO.getSpotId());
         MathContext mc = new MathContext(2);
         BigDecimal avSp = BigDecimal.valueOf(ps.getAvailableSpots()).add(BigDecimal.ONE);
         BigDecimal demand = ps.getDemandFactor().divide(avSp, mc);
         BigDecimal ev = ps.getEvFactor();
         BigDecimal bsPrice = ps.getBasePrice();
+        
         if (ps.getSpotType() != SpotType.ELECTRIC) {
             ev = BigDecimal.ZERO;
         }
-        BigDecimal duration = BigDecimal.valueOf(reservationCreateDTO.getScheduledCheckOut().getHour() -
-                reservationCreateDTO.getScheduledCheckIn().getHour());
-        BigDecimal ans = bsPrice.add(ev).multiply(duration).multiply(demand);
-        System.out.println(ans);
 
-        return ans;
+        // Calculate duration in hours, ensuring positive value
+        Duration duration = Duration.between(
+            reservationCreateDTO.getScheduledCheckIn(),
+            reservationCreateDTO.getScheduledCheckOut()
+        );
+        if (duration.isNegative() || duration.isZero()) {
+            throw new IllegalArgumentException("Invalid time period");
+        }
+        
+        BigDecimal durationHours = BigDecimal.valueOf(
+            Math.ceil(duration.toSeconds() / 3600.0)
+        );
+
+        BigDecimal ans = bsPrice.add(ev).multiply(durationHours).multiply(demand);
+        return ans.setScale(2, RoundingMode.HALF_UP);
     }
 
+    public List<ReservationDTO> getUpcomingReservations(Long spotId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Reservation> reservations = reservationDao.findUpcomingReservationsBySpotId(spotId, now);
+        return reservations.stream().map(reservation -> ReservationDTO.builder()
+                .scheduledCheckIn(reservation.getScheduledCheckIn())
+                .scheduledCheckOut(reservation.getScheduledCheckOut())
+                .build())
+                .toList();
+    }
 
     private List<ReservationDTO> getReservationDTOS(List<Reservation> reservations) {
         return reservations.stream()

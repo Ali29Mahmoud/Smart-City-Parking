@@ -101,4 +101,10 @@ public class NotificationDAO implements NotificationRepository {
 
         return jdbcTemplate.query(query,ROW_MAPPER,driverId,priority.toString());
     }
+
+    public int getUnreadNotificationsCount(Integer driverId) {
+        String query = "SELECT COUNT(*) FROM Notification WHERE userID = ? AND status <> 'READ'";
+        
+        return jdbcTemplate.queryForObject(query, Integer.class, driverId);
+    }
 }
