@@ -2,6 +2,7 @@ package com.example.SmartParkingSystem.controllers;
 
 import com.example.SmartParkingSystem.dtos.reservation.ReservationCreateDTO;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationDTO;
+import com.example.SmartParkingSystem.dtos.reservation.ReservationViewDTO;
 import com.example.SmartParkingSystem.entities.ReservationStatus;
 import com.example.SmartParkingSystem.services.ReservationService;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,7 @@ public class ReservationController {
     }
 
     @GetMapping("/driver/{driverId}")
-    public ResponseEntity<List<ReservationDTO>> getReservationsByDriverId(@PathVariable Long driverId) {
+    public ResponseEntity<List<ReservationViewDTO>> getReservationsByDriverId(@PathVariable Long driverId) {
         return ResponseEntity.ok(reservationService.findAllByDriverId(driverId));
     }
 

@@ -3,10 +3,8 @@ package com.example.SmartParkingSystem.services;
 import com.example.SmartParkingSystem.daos.ReservationDao;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationCreateDTO;
 import com.example.SmartParkingSystem.dtos.reservation.ReservationDTO;
-import com.example.SmartParkingSystem.entities.PricingStructure;
-import com.example.SmartParkingSystem.entities.Reservation;
-import com.example.SmartParkingSystem.entities.ReservationStatus;
-import com.example.SmartParkingSystem.entities.SpotType;
+import com.example.SmartParkingSystem.dtos.reservation.ReservationViewDTO;
+import com.example.SmartParkingSystem.entities.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,9 +118,24 @@ public class ReservationService {
         reservationDao.deleteById(id);
     }
 
-    public List<ReservationDTO> findAllByDriverId(Long driverId) {
-        List<Reservation> reservations = reservationDao.findAllByDriverId(driverId);
-        return getReservationDTOS(reservations);
+    public List<ReservationViewDTO> findAllByDriverId(Long driverId) {
+        List<ReservationView> reservations = reservationDao.findAllByDriverId(driverId);
+        return reservations.stream()
+                .map(reservation -> ReservationViewDTO.builder()
+                        .location(reservation.getLocation())
+                        .name(reservation.getName())
+                        .spotNumber(reservation.getSpotNumber())
+                        .status(reservation.getStatus())
+                        .checkIn(reservation.getCheckIn())
+                        .checkOut(reservation.getCheckOut())
+                        .scheduledCheckIn(reservation.getScheduledCheckIn())
+                        .scheduledCheckOut(reservation.getScheduledCheckOut())
+                        .amount(reservation.getAmount().toString())
+                        .paymentMethod(reservation.getPaymentMethod())
+                        .transactionId(reservation.getTransactionId())
+                        .createdAt(reservation.getCreatedAt())
+                        .build())
+                .toList();
     }
 
     public List<ReservationDTO> findAllBySpotId(Long spotId) {

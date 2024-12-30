@@ -89,11 +89,33 @@ public class ReservationDao {
         jdbcTemplate.update(sql, id);
     }
 
-    public List<Reservation> findAllByDriverId(Long driverId) {
+    public List<ReservationView> findAllByDriverId(Long driverId) {
         String sql = """
-                SELECT * FROM Reservation WHERE userID = ? ORDER BY scheduledCheckIn DESC
+                SELECT ParkingLot.location, ParkingLot.name, ParkingSpot.spotNumber, Reservation.status, Reservation.checkIn,
+                    Reservation.checkOut, Reservation.scheduledCheckIn, Reservation.scheduledCheckOut, Reservation.amount,
+                    Reservation.paymentMethod, Reservation.transactionId, Reservation.createdAt
+                FROM
+                    Reservation JOIN ParkingSystem.ParkingSpot
+                    ON Reservation.spotId = ParkingSpot.id
+                    JOIN ParkingSystem.ParkingLot
+                    ON ParkingSpot.parkingLotId = ParkingLot.id
+                WHERE userID = ?
+                ORDER BY scheduledCheckIn DESC
                 """;
-        return jdbcTemplate.query(sql, new ReservationRowMapper(), driverId);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> ReservationView.builder()
+                .location(rs.getString("location"))
+                .name(rs.getString("name"))
+                .spotNumber(rs.getInt("spotNumber"))
+                .status(ReservationStatus.valueOf(rs.getString("status")))
+                .checkIn(rs.getTimestamp("checkIn").toLocalDateTime())
+                .checkOut(rs.getTimestamp("checkOut").toLocalDateTime())
+                .scheduledCheckIn(rs.getTimestamp("scheduledCheckIn").toLocalDateTime())
+                .scheduledCheckOut(rs.getTimestamp("scheduledCheckOut").toLocalDateTime())
+                .amount(rs.getBigDecimal("amount"))
+                .paymentMethod(rs.getString("paymentMethod"))
+                .transactionId(rs.getString("transactionId"))
+                .createdAt(rs.getTimestamp("createdAt").toLocalDateTime())
+                .build(), driverId);
     }
 
     public List<Reservation> findAllBySpotId(Long spotId) {
@@ -226,4 +248,5 @@ public class ReservationDao {
             return timestamp != null ? timestamp.toLocalDateTime() : null;
         }
     }
+
 }
