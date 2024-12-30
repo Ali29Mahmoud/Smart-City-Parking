@@ -8,6 +8,7 @@ export function ParkingManagerHomePage() {
 
   return (
     <div className="space-y-6">
+
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Available Parking Lots</h1>
         <button

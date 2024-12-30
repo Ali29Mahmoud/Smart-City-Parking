@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import io.jsonwebtoken.ExpiredJwtException;
 
 import java.io.IOException;
 
@@ -39,27 +40,32 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             final int tokenStartIndex = 7;
             String jwt = authorizationHeader.substring(tokenStartIndex);
 
-            final String email = jwtService.extractEmail(jwt);
-            String role = jwtService.extractRole(jwt);
-            System.out.println("JWT Filter - Email: " + email + ", Role: " + role); // Add this
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            try {
+                final String email = jwtService.extractEmail(jwt);
+                String role = jwtService.extractRole(jwt);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if (email != null && authentication == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                System.out.println("JWT Filter - UserDetails authorities: " + userDetails.getAuthorities()); // Add this
+                if (email != null && authentication == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    System.out.println("JWT Filter - UserDetails authorities: " + userDetails.getAuthorities()); // Add this
 
-                if (jwtService.isValidToken(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()  // This will now contain the correct role
-                            );
-                    System.out.println("JWT Filter - Setting authentication with authorities: " + authToken.getAuthorities()); // Add this
+                    if (jwtService.isValidToken(jwt, userDetails)) {
+                        UsernamePasswordAuthenticationToken authToken =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities()  // This will now contain the correct role
+                                );
+                        System.out.println("JWT Filter - Setting authentication with authorities: " + authToken.getAuthorities()); // Add this
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
                 }
+            } catch (ExpiredJwtException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token has expired");
+                return;
             }
         }
         filterChain.doFilter(request, response);

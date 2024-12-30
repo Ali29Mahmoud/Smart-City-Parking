@@ -132,9 +132,19 @@ CREATE TABLE Notification
     FOREIGN KEY (userID) REFERENCES Users (id)
 );
 
--- Add indexes for common queries and performance
-CREATE INDEX idx_drivers_unpaid_penalties ON Users (unpaidPenalties);
-CREATE INDEX idx_reservations_status ON Reservation (status);
-CREATE INDEX idx_notifications_status ON Notification (status);
-CREATE INDEX idx_penalties_status ON Penalty (status);
-DROP PROCEDURE IF EXISTS CreateMultipleParkingSpots;
+
+-- Reservation table indexes
+CREATE INDEX idx_reservation_userid ON Reservation(userID);
+CREATE INDEX idx_reservation_spotid ON Reservation(spotId);
+CREATE INDEX idx_reservation_status ON Reservation(status);
+
+-- PenaltyPayment table indexes
+CREATE INDEX idx_penalty_payment_penaltyid ON PenaltyPayment(penaltyId);
+
+-- Penalty table indexes
+CREATE INDEX idx_penalty_reservationid ON Penalty(reservationId);
+CREATE INDEX idx_penalty_status ON Penalty(status);
+
+-- ParkingSpot table indexes
+CREATE INDEX idx_parkingspot_lotid_status ON ParkingSpot(parkingLotId, status);
+CREATE INDEX idx_parkingspot_number ON ParkingSpot(spotNumber);
