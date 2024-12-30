@@ -6,6 +6,7 @@ import { SignupPage } from "../pages/SignupPage";
 import { DriverHomePage } from "../pages/DriverHomePage";
 import { ParkingManagerHomePage } from "../pages/ParkingManagerHomePage";
 import { SystemAdminHomePage } from "../pages/SystemAdminHomePage";
+import { NotificationsPage } from "../pages/NotificationPage";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "notifications",
+        element: <NotificationsPage />,
       },
     ],
   },
