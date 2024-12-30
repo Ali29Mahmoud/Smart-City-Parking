@@ -25,6 +25,13 @@ import {
   MapPinIcon,
   AlertCircle,
   MapPinned,
+  Building,
+  ParkingMeter,
+  Mail,
+  Shield,
+  Phone,
+  Download,
+  Edit2,
 } from "lucide-react";
 
 export const Icons = {
@@ -53,4 +60,11 @@ export const Icons = {
   MapPinIcon,
   AlertCircle,
   MapPinned,
+  Building,
+  ParkingMeter,
+  Mail,
+  Shield,
+  Phone,
+  Download,
+  Edit2,
 };

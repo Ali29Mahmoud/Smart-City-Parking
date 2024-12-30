@@ -107,8 +107,6 @@ public class ReservationDao {
                 .name(rs.getString("name"))
                 .spotNumber(rs.getInt("spotNumber"))
                 .status(ReservationStatus.valueOf(rs.getString("status")))
-                .checkIn(rs.getTimestamp("checkIn").toLocalDateTime())
-                .checkOut(rs.getTimestamp("checkOut").toLocalDateTime())
                 .scheduledCheckIn(rs.getTimestamp("scheduledCheckIn").toLocalDateTime())
                 .scheduledCheckOut(rs.getTimestamp("scheduledCheckOut").toLocalDateTime())
                 .amount(rs.getBigDecimal("amount"))

@@ -6,9 +6,10 @@ export enum ReservationStatus {
 }
 
 export interface Reservation {
-  id: number;
-  driverId: number;
-  spotId: number;
+  id: string;
+  location: string;
+  name: string;
+  spotNumber: number;
   status: ReservationStatus;
   checkIn: string | null;
   checkOut: string | null;

@@ -27,11 +27,23 @@ export function ReservationCard({ reservation }: ReservationCardProps) {
     <div className="p-6">
       <div className="flex justify-between">
         <div className="space-y-4 flex-1">
-          <div className="flex items-center space-x-2">
-            <Icons.MapPin className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-medium text-gray-900">
-              Spot #{reservation.spotId}
-            </h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Icons.Building className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-medium text-gray-900">
+                {reservation.name}
+              </h3>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Icons.MapPin className="h-4 w-4 text-gray-600" />
+              <span className="text-sm text-gray-600">{reservation.location}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Icons.ParkingMeter className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Spot #{reservation.spotNumber}
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">

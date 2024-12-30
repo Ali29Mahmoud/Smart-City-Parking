@@ -126,8 +126,6 @@ public class ReservationService {
                         .name(reservation.getName())
                         .spotNumber(reservation.getSpotNumber())
                         .status(reservation.getStatus())
-                        .checkIn(reservation.getCheckIn())
-                        .checkOut(reservation.getCheckOut())
                         .scheduledCheckIn(reservation.getScheduledCheckIn())
                         .scheduledCheckOut(reservation.getScheduledCheckOut())
                         .amount(reservation.getAmount().toString())

@@ -17,8 +17,6 @@ public class ReservationView {
     private String name;
     private Integer spotNumber;
     private ReservationStatus status;
-    private LocalDateTime checkIn;
-    private LocalDateTime checkOut;
     private LocalDateTime scheduledCheckIn;
     private LocalDateTime scheduledCheckOut;
     private BigDecimal amount;
